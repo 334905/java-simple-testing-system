@@ -38,30 +38,6 @@ public class SortingTest {
     static final IndentingWriter writer =
             new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
 
-    private static <T> String arrayToString(final T[] array) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < Math.min(9, array.length); i++) {
-            sb.append(array[i]);
-            if (i + 1 != Math.min(9, array.length)) {
-                sb.append(", ");
-            }
-        }
-        if (array.length > 9) {
-            sb.append("... (").append(array.length).append(" total)]");
-        } else {
-            sb.append("]");
-        }
-        return sb.toString();
-    }
-    private static void test(final String[] input, final SortingTester tester) throws Exception {
-        writer.scope(() -> {
-            writer.write("Testing: " + arrayToString(input) + "\n");
-            if (!tester.test(input, null)) {
-                throw new AssertionError("Failure.");
-            }
-        });
-    }
-
     public static void main(final String[] args) throws Exception {
         final ExtendedRandom random = new ExtendedRandom();
         final SortingTester tester = new SortingTester();
@@ -73,16 +49,24 @@ public class SortingTest {
                     writer.write(String.format("Testing maximum string size %d.\n", stringSize));
                     writer.scope(() -> {
                         for (final String source : new String[]{"abc", "abcdefghijk", "abcdefghijklmnopqrstuvwxyz"}) {
-                            writer.write(String.format("Testing letters %s.\n", arrayToString(source
+                            /*writer.write(String.format("Testing letters %s.\n", arrayToString(source
                                     .chars()
                                     .mapToObj(Character::toString)
-                                    .toArray(String[]::new))));
+                                    .toArray(String[]::new))));*/
+                            writer.write("Testing letters ");
+                            writer.write(source
+                                    .chars()
+                                    .mapToObj(Character::toString)
+                                    .toArray(String[]::new));
+                            writer.write('\n');
                             for (int i = 0; i < 10; i++) {
                                 writer.scope(() -> {
                                     final String[] input =
                                             random.stringsFrom(1, stringSize, source, size)
                                                     .toArray(String[]::new);
-                                    writer.write("Testing: " + arrayToString(input) + "\n");
+                                    writer.write("Testing: ");
+                                    writer.write(input);
+                                    writer.write('\n');
                                     if (!tester.test(input, null)) {
                                         throw new AssertionError("Failure.");
                                     }

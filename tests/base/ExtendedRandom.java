@@ -1,6 +1,7 @@
 package base;
 
 import java.util.Random;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ExtendedRandom extends Random {
@@ -28,8 +29,12 @@ public class ExtendedRandom extends Random {
         return nextStringFrom(nextInt(maxSize - minSize + 1) + minSize, source);
     }
 
+    public Supplier<String> stringsSupplierFrom(final int minSize, final int maxSize, final String source) {
+        return () -> nextStringFrom(minSize, maxSize, source);
+    }
+
     public Stream<String> stringsFrom(final int minSize, final int maxSize, final String source) {
-        return Stream.generate(() -> nextStringFrom(minSize, maxSize, source));
+        return Stream.generate(stringsSupplierFrom(minSize, maxSize, source));
     }
 
     public Stream<String> stringsFrom(final int minSize, final int maxSize, final String source, final long size) {

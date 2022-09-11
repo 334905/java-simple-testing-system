@@ -37,13 +37,40 @@ public class IndentingWriter extends Writer {
         }
     }
 
+    static boolean needToIndent = true;
     @Override
     public void write(final char[] cbuf, final int off, final int len) throws IOException {
-        for (String str : LINE_SEPARATOR.split(CharBuffer.wrap(cbuf, off, len))) {
-            indent(writer);
+        for (final String str : LINE_SEPARATOR.split(CharBuffer.wrap(cbuf, off, len))) {
+            if (needToIndent) {
+                indent(writer);
+            }
             writer.write(str);
+            needToIndent = str.endsWith("\n");
             writer.flush();
         }
+    }
+
+    public <T> void write(final T[] array) throws IOException {
+        final int MAX_STRING_SIZE = 15;
+        final int MAX_ARRAY_SIZE = 9;
+
+        final int printableArraySize = Math.min(MAX_ARRAY_SIZE, array.length);
+        write('[');
+        for (int i = 0; i < printableArraySize; i++) {
+            final String objectRepresentation = array[i].toString();
+            if (objectRepresentation.length() > MAX_STRING_SIZE) {
+                write(objectRepresentation.substring(0, MAX_STRING_SIZE) + "...(" + objectRepresentation.length() + " chars repr)");
+            } else {
+                write(objectRepresentation);
+            }
+            if (i + 1 != array.length) {
+                write(", ");
+            }
+        }
+        if (array.length != printableArraySize) {
+            write("...(" + array.length + " total)");
+        }
+        write("]");
     }
 
     @Override
