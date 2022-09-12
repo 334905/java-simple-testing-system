@@ -51,7 +51,7 @@ public class IndentingWriter extends Writer {
     }
 
     public <T> void write(final T[] array) throws IOException {
-        final int MAX_STRING_SIZE = 15;
+        final int MAX_STRING_SIZE = 30;
         final int MAX_ARRAY_SIZE = 9;
 
         final int printableArraySize = Math.min(MAX_ARRAY_SIZE, array.length);
