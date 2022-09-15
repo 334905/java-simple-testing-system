@@ -39,6 +39,9 @@ public class SumTest {
 
         @Override
         protected Integer convertOutput(final List<String> output) {
+            if (output.size() != 1) {
+                throw new AssertionError("Only one line should be printed.");
+            }
             return Integer.valueOf(output.get(0));
         }
 
