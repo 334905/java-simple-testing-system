@@ -12,16 +12,12 @@ public abstract class MainTester<A, I, O> extends ClassTester {
         main = aClass.getMethod("main", String[].class);
     }
 
-    private List<String> runMain(final String[] args, final List<String> input)
-            throws InvocationTargetException, IllegalAccessException {
+    private List<String> runMain(final String[] args, final List<String> input) throws IllegalAccessException {
         return runMethod(null, main, args, input);
     }
 
     public final boolean test(final A args, final I input) throws ReflectiveOperationException {
         List<String> output = runMain(convertArgs(args), convertInput(input));
-        if (output == null) {
-            return false;
-        }
         return checkMain(args, input, convertOutput(output));
     }
     protected abstract List<String> convertInput(final I input);

@@ -30,7 +30,7 @@ public abstract class ClassTester {
 
     protected final List<String> runMethod(final Object instance, final Method method,
                                            final Object[] args, final List<String> input)
-            throws InvocationTargetException, IllegalAccessException {
+            throws IllegalAccessException {
         final InputStream oldIn = System.in;
         final PrintStream oldOut = System.out;
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -52,10 +52,8 @@ public abstract class ClassTester {
             System.setOut(new PrintStream(out, false, StandardCharsets.UTF_8));
             try {
                 method.invoke(instance, (Object) args);
-            } catch (final InvocationTargetException | IllegalAccessException e) {
-                throw e;
-            } catch (final Exception | AssertionError e) {
-                return null;
+            } catch (final InvocationTargetException e) {
+                throw new AssertionError("Test failed with exception (see `Caused by`)", e.getTargetException());
             } finally {
                 System.setOut(oldOut);
             }
