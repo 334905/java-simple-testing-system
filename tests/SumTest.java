@@ -148,13 +148,14 @@ public class SumTest {
         writer.scope(() -> {
             test(tester, "1", "2", "3");
             test(tester, "1", "2", "-3");
-            test(tester, "1 \t2\n 3");
-            test(tester, "1\t+2", "      3");
+            test(tester, "1 2 3");
+            test(tester, "1 +2", "      3");
             test(tester, " ");
             test(tester, "2147483647", "1");
         });
         writer.write("Testing manual tests with 0 to 9 digits...\n");
         writer.scope(() -> {
+            test(tester, "\f-1\t2\n+3\r");
             test(tester);
             test(tester, "", "\t", "\f", "\u000B", "\n ");
             test(tester, "-0000000000123440\u2029\f+000006675", "-00098890");
