@@ -34,19 +34,14 @@ public abstract class ClassTester {
         final InputStream oldIn = System.in;
         final PrintStream oldOut = System.out;
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final byte[] lineSeparator = System.lineSeparator().getBytes(StandardCharsets.UTF_8);
+
         System.setIn(
-                input.stream()
-                        .map(str -> (InputStream) new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8)))
-                        .reduce(InputStream.nullInputStream(),
-                                (s1, s2) -> new SequenceInputStream(
-                                        s1,
-                                        new SequenceInputStream(
-                                                new ByteArrayInputStream(lineSeparator),
-                                                s2
-                                        )
-                                )
-                        )
+                new ByteArrayInputStream(
+                        input.stream().map(StringBuilder::new)
+                                .reduce(new StringBuilder(), (s1, s2) -> s1.append(System.lineSeparator()).append(s2))
+                                .toString()
+                                .getBytes(StandardCharsets.UTF_8)
+                )
         );
         try {
             System.setOut(new PrintStream(out, false, StandardCharsets.UTF_8));
