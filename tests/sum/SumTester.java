@@ -17,8 +17,8 @@ class SumTester<T extends Number> extends MainTester<String[], Void, T> {
         WHITESPACE = Pattern.compile("[" + Pattern.quote(new String(whitespaces, 0, whitespaces.length)) + "]++");
     }
 
-    public SumTester(final Mode<T> mode) throws ClassNotFoundException, NoSuchMethodException {
-        super("Sum");
+    public SumTester(final String className, final Mode<T> mode) throws ClassNotFoundException, NoSuchMethodException {
+        super(className);
         this.mode = mode;
     }
 

@@ -43,9 +43,10 @@ public class SumTestBase<T extends Number> {
     protected final IndentingWriter writer =
             new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
 
-    public SumTestBase(final Mode<T> mode) throws ClassNotFoundException, NoSuchMethodException {
+    public SumTestBase(final String className, final Mode<T> mode)
+            throws ClassNotFoundException, NoSuchMethodException {
         this.mode = mode;
-        tester = new SumTester<>(mode);
+        tester = new SumTester<>(className, mode);
     }
 
     protected void test(final String... args)

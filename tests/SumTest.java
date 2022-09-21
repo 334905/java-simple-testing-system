@@ -4,7 +4,7 @@ import sum.SumTestBase;
 
 public class SumTest extends SumTestBase<Integer> {
     public SumTest() throws ClassNotFoundException, NoSuchMethodException {
-        super(ModeInteger.instance);
+        super("Sum", ModeInteger.instance);
     }
     
     private void run() throws Exception {
