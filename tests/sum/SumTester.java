@@ -1,5 +1,6 @@
 package sum;
 
+import base.Characters;
 import base.testers.MainTester;
 
 import java.util.Arrays;
@@ -13,8 +14,7 @@ class SumTester<T extends Number> extends MainTester<String[], Void, T> {
     static public final Pattern WHITESPACE;
 
     static {
-        final int[] whitespaces = IntStream.rangeClosed(0, Character.MAX_VALUE).filter(Character::isWhitespace).toArray();
-        WHITESPACE = Pattern.compile("[" + Pattern.quote(new String(whitespaces, 0, whitespaces.length)) + "]++");
+        WHITESPACE = Pattern.compile("[" + Pattern.quote(Characters.WHITESPACES) + "]++");
     }
 
     public SumTester(final String className, final Mode<T> mode) throws ClassNotFoundException, NoSuchMethodException {

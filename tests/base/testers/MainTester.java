@@ -13,7 +13,7 @@ public abstract class MainTester<A, I, O> extends ClassTester {
     }
 
     private List<String> runMain(final String[] args, final List<String> input) throws IllegalAccessException {
-        return runMethod(null, main, args, input);
+        return runMethod(null, main, input, (Object) args);
     }
 
     public final boolean test(final A args, final I input) throws ReflectiveOperationException {

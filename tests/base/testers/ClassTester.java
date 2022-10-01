@@ -28,8 +28,30 @@ public abstract class ClassTester {
         aClass = loader.loadClass(className);
     }
 
+    protected final List<String> readFile(final String fileName) throws IOException {
+        try (final BufferedReader reader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8))) {
+            return reader.lines().toList();
+        }
+    }
+    protected final void writeFile(final String fileName, final List<String> lines) throws IOException {
+        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, StandardCharsets.UTF_8))) {
+            for (final String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        }
+    }
+
+    protected final void runMethod(final Object instance, final Method method, final Object... args)
+            throws IllegalAccessException {
+        try {
+            method.invoke(instance, args);
+        } catch (final InvocationTargetException e) {
+            throw new AssertionError("Test failed with exception (see `Caused by`)", e.getTargetException());
+        }
+    }
     protected final List<String> runMethod(final Object instance, final Method method,
-                                           final Object[] args, final List<String> input)
+                                           final List<String> input, final Object... args)
             throws IllegalAccessException {
         final InputStream oldIn = System.in;
         final PrintStream oldOut = System.out;
@@ -46,9 +68,7 @@ public abstract class ClassTester {
         try {
             System.setOut(new PrintStream(out, false, StandardCharsets.UTF_8));
             try {
-                method.invoke(instance, (Object) args);
-            } catch (final InvocationTargetException e) {
-                throw new AssertionError("Test failed with exception (see `Caused by`)", e.getTargetException());
+                runMethod(instance, method, args);
             } finally {
                 System.setOut(oldOut);
             }
