@@ -113,11 +113,11 @@ To be, or not to be, that is the question:
 Выходной файл
 ```
 to 2
-be 2
+be, 2
 or 1
 not 1
 that 1
 is 1
 the 1
-question 1
+question: 1
 ```
