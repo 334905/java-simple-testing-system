@@ -11,25 +11,39 @@ public class Characters {
         WHITESPACES = new String(whitespaces, 0, whitespaces.length);
     }
 
-    public static final String DECIMAL_NUMBERS;
-    public static final CharBuffer[] DECIMALS = new CharBuffer[10];
+    public static final String[] DECIMALS = new String[10];
 
     static {
-        final String[] decimals = new String[10];
-        final StringBuilder[] builders = new StringBuilder[decimals.length];
+        final StringBuilder[] builders = new StringBuilder[DECIMALS.length];
         for (int i = 0; i < builders.length; i++) {
             builders[i] = new StringBuilder();
         }
         IntStream.rangeClosed(0, Character.MAX_VALUE)
                 .filter(ch -> Character.getType(ch) == Character.DECIMAL_DIGIT_NUMBER)
                 .forEach(ch -> builders[Integer.parseInt("" + (char) ch)].append((char) ch));
-        for (int i = 0; i < decimals.length; i++) {
-            decimals[i] = builders[i].toString();
-        }
-        DECIMAL_NUMBERS = String.join("", decimals);
-
-        for (int i = 0; i < 10; i++) {
-            //DECIMALS[i] = CharBuffer.wrap(DECIMAL_NUMBERS,
+        for (int i = 0; i < DECIMALS.length; i++) {
+            DECIMALS[i] = builders[i].toString();
         }
     }
+
+    public static final String LETTERS;
+
+    static {
+        final int[] letters = IntStream.rangeClosed(0, Character.MAX_VALUE)
+                .filter(Character::isLetter)
+                .toArray();
+        LETTERS = new String(letters, 0, letters.length);
+    }
+
+    public static final String LETTERS_ENGLISH_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    public static final String LETTERS_ENGLISH_UPPER = LETTERS_ENGLISH_LOWER.toUpperCase();
+    public static final String LETTERS_ENGLISH = LETTERS_ENGLISH_UPPER + LETTERS_ENGLISH_LOWER;
+
+    public static final String LETTERS_RUSSIAN_LOWER = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+    public static final String LETTERS_RUSSIAN_UPPER = LETTERS_RUSSIAN_LOWER.toUpperCase();
+    public static final String LETTERS_RUSSIAN = LETTERS_RUSSIAN_UPPER + LETTERS_RUSSIAN_LOWER;
+
+    public static final String LETTERS_GREEK_LOWER = "αβγδεζηθικλμνξοπρςστυφχψω";
+    public static final String LETTERS_GREEK_UPPER = LETTERS_GREEK_LOWER.toUpperCase();
+    public static final String LETTERS_GREEK = LETTERS_GREEK_UPPER + LETTERS_GREEK_LOWER;
 }

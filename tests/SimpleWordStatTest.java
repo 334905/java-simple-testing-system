@@ -19,7 +19,7 @@ public class SimpleWordStatTest extends WordStatTestBase<SimpleWordStatTest.Word
     private static class SimpleWordStatTester extends WordStatTesterBase<WordAndCount> {
         public SimpleWordStatTester() throws ClassNotFoundException, NoSuchMethodException {
             super("SimpleWordStat",
-                    Pattern.compile("[^" + Pattern.quote(" \t\n\u000B\f\r") + "]+"));
+                    Pattern.compile("[^" + Pattern.quote(" \t\n\u000B\f\r") + "]++"));
         }
 
         @Override
