@@ -4,14 +4,14 @@ import base.ExtendedRandom;
 
 import java.util.Arrays;
 
-public class ReverseOddTester extends AbstractReverseTester {
-    public ReverseOddTester(final ExtendedRandom random) throws ClassNotFoundException, NoSuchMethodException {
-        super("ReverseOdd", random);
+public class ReverseEvenTester extends AbstractReverseTester {
+    public ReverseEvenTester(final ExtendedRandom random) throws ClassNotFoundException, NoSuchMethodException {
+        super("ReverseEven", random);
     }
 
     @Override
     protected boolean checkMain(final Void args, int[][] input, final int[][] output) {
-        input = Arrays.stream(input).map(a -> Arrays.stream(a).filter(n -> n % 2 == 0).toArray()).toArray(int[][]::new);
+        input = Arrays.stream(input).map(a -> Arrays.stream(a).filter(n -> n % 2 == 1).toArray()).toArray(int[][]::new);
 
         if (input.length != output.length) {
             return false;

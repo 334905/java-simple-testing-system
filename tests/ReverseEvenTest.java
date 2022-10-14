@@ -1,7 +1,7 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
 import base.IntArrayList;
-import reverse.ReverseOddTester;
+import reverse.ReverseEvenTester;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -9,12 +9,12 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class ReverseOddTest {
+public class ReverseEvenTest {
     private static final ExtendedRandom random = new ExtendedRandom();
     private static final IndentingWriter writer =
             new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
 
-    private static void test(final ReverseOddTester tester, int[][] input) throws ReflectiveOperationException, IOException {
+    private static void test(final ReverseEvenTester tester, int[][] input) throws ReflectiveOperationException, IOException {
         writer.write("Testing ");
         writer.write(Arrays.stream(input).map(Arrays::toString).toArray(String[]::new));
         writer.write('\n');
@@ -23,7 +23,7 @@ public class ReverseOddTest {
         }
     }
 
-    private static void randomTest(final ReverseOddTester tester,
+    private static void randomTest(final ReverseEvenTester tester,
                                    final int size, final int linesCount, final int min, final int max)
             throws ReflectiveOperationException, IOException {
         IntArrayList[] lines = new IntArrayList[linesCount];
@@ -35,7 +35,7 @@ public class ReverseOddTest {
     }
 
     public static void main(final String[] args) throws Exception {
-        final ReverseOddTester tester = new ReverseOddTester(random);
+        final ReverseEvenTester tester = new ReverseEvenTester(random);
         writer.write("Testing statement* tests...\n");
         writer.scope(() -> {
             test(tester, new int[][]{
