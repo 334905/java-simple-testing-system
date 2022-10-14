@@ -33,6 +33,7 @@ public abstract class ClassTester {
             return reader.lines().toList();
         }
     }
+
     protected final void writeFile(final String fileName, final List<String> lines) throws IOException {
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, StandardCharsets.UTF_8))) {
             for (final String line : lines) {
@@ -50,6 +51,7 @@ public abstract class ClassTester {
             throw new AssertionError("Test failed with exception (see `Caused by`)", e.getTargetException());
         }
     }
+
     protected final List<String> runMethod(final Object instance, final Method method,
                                            final List<String> input, final Object... args)
             throws IllegalAccessException {
@@ -60,8 +62,9 @@ public abstract class ClassTester {
         System.setIn(
                 new ByteArrayInputStream(
                         input.stream().map(StringBuilder::new)
-                                .reduce(new StringBuilder(), (s1, s2) -> s1.append(System.lineSeparator()).append(s2))
-                                .toString()
+                                .reduce((s1, s2) -> s1.append(System.lineSeparator()).append(s2))
+                                .map(Object::toString)
+                                .orElse("")
                                 .getBytes(StandardCharsets.UTF_8)
                 )
         );

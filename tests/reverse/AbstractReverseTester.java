@@ -37,7 +37,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
         if (output.isEmpty()) {
             return new int[0][];
         }
-        return output.stream().limit(output.size() - 1).map(
+        return output.stream().map(
                 s -> {
                     s = s.strip();
                     if (s.isEmpty()) {
