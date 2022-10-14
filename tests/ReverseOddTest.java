@@ -1,25 +1,20 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
 import base.IntArrayList;
-import base.testers.MainTester;
-import reverse.ReverseTester;
+import reverse.ReverseOddTester;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-public class ReverseTest {
+public class ReverseOddTest {
     private static final ExtendedRandom random = new ExtendedRandom();
     private static final IndentingWriter writer =
             new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
 
-    private static void test(final ReverseTester tester, int[][] input) throws ReflectiveOperationException, IOException {
+    private static void test(final ReverseOddTester tester, int[][] input) throws ReflectiveOperationException, IOException {
         writer.write("Testing ");
         writer.write(Arrays.stream(input).map(Arrays::toString).toArray(String[]::new));
         writer.write('\n');
@@ -28,7 +23,7 @@ public class ReverseTest {
         }
     }
 
-    private static void randomTest(final ReverseTester tester,
+    private static void randomTest(final ReverseOddTester tester,
                                    final int size, final int linesCount, final int min, final int max)
             throws ReflectiveOperationException, IOException {
         IntArrayList[] lines = new IntArrayList[linesCount];
@@ -40,25 +35,25 @@ public class ReverseTest {
     }
 
     public static void main(final String[] args) throws Exception {
-        final ReverseTester tester = new ReverseTester(random);
+        final ReverseOddTester tester = new ReverseOddTester(random);
         writer.write("Testing statement* tests...\n");
         writer.scope(() -> {
             test(tester, new int[][]{
-                    {1, 2},
-                    {3}
+                    {1, 2, 3, 4},
+                    {5, 6}
             });
             test(tester, new int[][]{
-                    {3},
-                    {2, 1}
+                    {5, 6},
+                    {4, 3, 2, 1}
             });
             test(tester, new int[][]{
-                    {1},
+                    {-2, 1, 10},
                     {},
-                    {2, -3}
+                    {2, -5, -3, 4, 8}
             });
             test(tester, new int[][]{
                     {1, 2},
-                    {3, 4}
+                    {4, 3}
             });
         });
         writer.write("Testing manual tests...\n");
@@ -73,20 +68,35 @@ public class ReverseTest {
                     {}
             });
             test(tester, new int[][]{
+                    {2, 4, 6},
+                    {8, 10},
+                    {12}
+            });
+            test(tester, new int[][]{
+                    {2, 4, 6},
+                    {8, 10, 123, 0},
+                    {},
+                    {12}
+            });
+            test(tester, new int[][]{
                     {1},
             });
             test(tester, new int[][]{
-                    {},
+                    {0},
+            });
+            test(tester, new int[][]{
+                    {0},
+                    {2, 8},
                     {},
                     {1},
                     {},
             });
             test(tester, new int[][]{
                     {},
-                    {1, 2, 3},
-                    {4, 5},
+                    {1, 2, 3, 4, 5},
+                    {6, 7, 8, 9},
                     {},
-                    {6},
+                    {10, 11, 12},
                     {},
                     {}
             });
@@ -94,15 +104,15 @@ public class ReverseTest {
                     {},
                     {},
                     {},
-                    {1, -2, 3, 4},
+                    {-2, 0, 1, -2, -3, 5, 6, 8, -10},
                     {},
                     {},
                     {},
-                    {-5, -6},
+                    {9, 11, 14, 13},
                     {},
                     {},
                     {},
-                    {7},
+                    {15},
                     {},
                     {},
                     {}
