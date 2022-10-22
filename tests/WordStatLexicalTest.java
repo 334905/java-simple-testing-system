@@ -3,7 +3,9 @@ import word_stat.WordStatTestBase;
 import word_stat.WordStatTesterBase;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +27,7 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
         protected List<WordAndCount> collectStats(final Stream<Word> words) {
             return words.collect(Collectors.groupingBy(w -> w.word().toLowerCase(), Collectors.counting()))
                     .entrySet().stream()
-                    .sorted((e1, e2) -> e1.getKey().compareToIgnoreCase(e2.getKey()))
+                    .sorted(Map.Entry.comparingByKey())
                     .map(e -> new WordAndCount(e.getKey(), e.getValue()))
                     .toList();
         }
@@ -41,12 +43,13 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
         test("Monday's child is fair of face.", "Tuesday's child is full of grace.");
         test("Шалтай-Болтай", "Сидел на стене.", "Шалтай-Болтай", "Свалился во сне.");
         test("兵 者, 诡 道 也. 故 能 而 示 之 不能, 用 而 示 之 不用, 近 而 示 之 远, 远 而 示 之 近");
+        test("σω ςα ςα ςα σω");
 
-        randomTest(10, 0, 5, 1, 20, Characters.LETTERS_ENGLISH, " ");
-        randomTest(15, 3, 15, 1, 20, Characters.LETTERS_RUSSIAN, " \t");
-        randomTest(35, 10, 30, 1, 50, Characters.LETTERS_GREEK + Characters.LETTERS_RUSSIAN, " \t");
+        randomTest(10, 1, 3, 1, 2, Characters.LETTERS_ENGLISH, " ");
+        randomTest(15, 1, 3, 1, 20, Characters.LETTERS_RUSSIAN, " \t");
+        randomTest(35, 1, 4, 1, 50, Characters.LETTERS_GREEK + Characters.LETTERS_RUSSIAN, " \t");
         randomTest(100,
-                0, 50,
+                1, 5,
                 1, 50,
                 Characters.LETTERS_GREEK
                         + Characters.LETTERS_RUSSIAN
