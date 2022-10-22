@@ -16,7 +16,7 @@ public class WordStatScannedTest extends WordStatTestBase<WordStatScannedTest.Wo
         super(new WordStatScannedTester());
     }
 
-    record WordAndCount(String word, long count) {
+    protected static record WordAndCount(String word, long count) {
     }
 
     private static class WordStatScannedTester extends WordStatTesterBase<WordAndCount> {
