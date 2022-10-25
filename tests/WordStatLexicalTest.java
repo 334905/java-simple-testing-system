@@ -43,7 +43,8 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
         test("Monday's child is fair of face.", "Tuesday's child is full of grace.");
         test("Шалтай-Болтай", "Сидел на стене.", "Шалтай-Болтай", "Свалился во сне.");
         test("兵 者, 诡 道 也. 故 能 而 示 之 不能, 用 而 示 之 不用, 近 而 示 之 远, 远 而 示 之 近");
-        test("σω ςα ςα ςα σω");
+        test("\t\t\t", " \t ", "", "\t");
+        test("\t σω   ςα\t \tςα   ςα\tσω  ");
 
         randomTest(10, 1, 3, 1, 2, Characters.LETTERS_ENGLISH, " ");
         randomTest(15, 1, 3, 1, 20, Characters.LETTERS_RUSSIAN, " \t");

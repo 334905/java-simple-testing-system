@@ -53,19 +53,20 @@ public class WordStatScannedTest extends WordStatTestBase<WordStatScannedTest.Wo
         test("Monday's child is fair of face.", "Tuesday's child is full of grace.");
         test("Шалтай-Болтай", "Сидел на стене.", "Шалтай-Болтай", "Свалился во сне.");
         test("兵 者, 诡 道 也. 故 能 而 示 之 不能, 用 而 示 之 不用, 近 而 示 之 远, 远 而 示 之 近");
+        test("\t\t\t", " \t ", "", "\t");
 
-       randomTest(10, 0, 5, 1, 20, Characters.LETTERS_ENGLISH, " ");
-       randomTest(15, 3, 15, 1, 20, Characters.LETTERS_RUSSIAN, " \t");
-       randomTest(35, 10, 30, 1, 50, Characters.LETTERS_GREEK + Characters.LETTERS_RUSSIAN, " \t");
-       randomTest(100,
-               0, 50,
-               1, 50,
-               Characters.LETTERS_GREEK
-                       + Characters.LETTERS_RUSSIAN
-                       + Characters.LETTERS_ENGLISH
-                       + Characters.DECIMALS[0] + Characters.DECIMALS[9]
-                       + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
-               " \t\u00B0");
+        randomTest(10, 0, 5, 1, 20, Characters.LETTERS_ENGLISH, " ");
+        randomTest(15, 3, 15, 1, 20, Characters.LETTERS_RUSSIAN, " \t");
+        randomTest(35, 10, 30, 1, 50, Characters.LETTERS_GREEK + Characters.LETTERS_RUSSIAN, " \t");
+        randomTest(100,
+                0, 50,
+                1, 50,
+                Characters.LETTERS_GREEK
+                        + Characters.LETTERS_RUSSIAN
+                        + Characters.LETTERS_ENGLISH
+                        + Characters.DECIMALS[0] + Characters.DECIMALS[9]
+                        + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
+                " \t\u00B0");
     }
 
     public static void main(final String[] args) throws ReflectiveOperationException, IOException {
