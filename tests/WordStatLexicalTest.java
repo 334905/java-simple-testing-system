@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
         }
     }
 
-    public void main() throws ReflectiveOperationException, IOException {
+    private void main() throws ReflectiveOperationException, IOException {
         test("To be, or not to be, that is the question:");
         test("Monday's child is fair of face.", "Tuesday's child is full of grace.");
         // test("Шалтай-Болтай", "Сидел на стене.", "Шалтай-Болтай", "Свалился во сне.");
@@ -66,7 +67,22 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
                 " \t\u00B0");
     }
 
+    private void additionalTest() throws ReflectiveOperationException, IOException {
+        randomTest(10000,
+                1, 5,
+                1, 50,
+                Characters.LETTERS_GREEK
+                        + Characters.LETTERS_RUSSIAN
+                        + Characters.LETTERS_ENGLISH
+                        + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
+                " \t\u00B0");
+    }
+
     public static void main(final String[] args) throws ReflectiveOperationException, IOException {
-        new WordStatLexicalTest().main();
+        WordStatLexicalTest test = new WordStatLexicalTest();
+        test.main();
+        if (args.length == 1) {
+            test.additionalTest();
+        }
     }
 }
