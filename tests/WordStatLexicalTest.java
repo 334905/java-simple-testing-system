@@ -104,22 +104,7 @@ public class WordStatLexicalTest extends WordStatTestBase<WordStatLexicalTest.Wo
                 " \t\u00B0");
     }
 
-    private void additionalTest() throws ReflectiveOperationException, IOException {
-        randomTest(10000,
-                1, 5,
-                1, 50,
-                Characters.LETTERS_GREEK
-                        + Characters.LETTERS_RUSSIAN
-                        + Characters.LETTERS_ENGLISH
-                        + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
-                " \t\u00B0");
-    }
-
     public static void main(final String[] args) throws ReflectiveOperationException, IOException {
-        WordStatLexicalTest test = new WordStatLexicalTest();
-        test.main();
-        if (args.length == 1) {
-            test.additionalTest();
-        }
+        new WordStatLexicalTest().main();
     }
 }
