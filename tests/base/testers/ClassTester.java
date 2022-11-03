@@ -1,5 +1,8 @@
 package base.testers;
 
+import base.expected.Expected;
+import base.pairs.Pair;
+
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,18 +46,26 @@ public abstract class ClassTester {
         }
     }
 
-    protected final void runMethod(final Object instance, final Method method, final Object... args)
+    protected final Expected<Object, Exception> runMethod(final Object instance, final Method method, final Object... args)
             throws IllegalAccessException {
         try {
-            method.invoke(instance, args);
+            return Expected.ofValue(method.invoke(instance, args));
         } catch (final InvocationTargetException e) {
-            throw new AssertionError("Test failed with exception (see `Caused by`)", e.getTargetException());
+            if (e.getTargetException() instanceof Exception exception) {
+                return Expected.ofError(exception);
+            } else {
+                throw new AssertionError(
+                        "Calling method " + method.getName()
+                                + " of class" + aClass.getName()
+                                + " caused error throwing (see `Caused by`)",
+                        e.getTargetException());
+            }
         }
     }
 
-    protected final List<String> runMethod(final Object instance, final Method method,
-                                           final List<String> input, final Object... args)
-            throws IllegalAccessException {
+    protected final Expected<Pair<Object, List<String>>, Exception>
+    runMethod(final Object instance, final Method method,
+              final List<String> input, final Object... args) throws IllegalAccessException {
         final InputStream oldIn = System.in;
         final PrintStream oldOut = System.out;
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -71,15 +82,27 @@ public abstract class ClassTester {
         try {
             System.setOut(new PrintStream(out, false, StandardCharsets.UTF_8));
             try {
-                runMethod(instance, method, args);
+                final Expected<Object, Exception> runResult = runMethod(instance, method, args);
+                if (runResult.hasValue()) {
+                    final BufferedReader outReader = new BufferedReader(
+                            new StringReader(
+                                    out.toString(StandardCharsets.UTF_8)
+                            )
+                    );
+                    return Expected.ofValue(
+                            Pair.of(
+                                    runResult.getValue(),
+                                    List.of(outReader.lines().toArray(String[]::new))
+                            )
+                    );
+                } else {
+                    return Expected.ofError(runResult.getError());
+                }
             } finally {
                 System.setOut(oldOut);
             }
         } finally {
             System.setIn(oldIn);
         }
-
-        final BufferedReader outReader = new BufferedReader(new StringReader(out.toString(StandardCharsets.UTF_8)));
-        return List.of(outReader.lines().toArray(String[]::new));
     }
 }

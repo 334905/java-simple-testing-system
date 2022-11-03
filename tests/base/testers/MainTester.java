@@ -1,5 +1,8 @@
 package base.testers;
 
+import base.expected.Expected;
+import base.pairs.Pair;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -12,12 +15,13 @@ public abstract class MainTester<A, I, O> extends ClassTester {
         main = aClass.getMethod("main", String[].class);
     }
 
-    private List<String> runMain(final String[] args, final List<String> input) throws IllegalAccessException {
-        return runMethod(null, main, input, (Object) args);
+    private Expected<List<String>, Exception> runMain(final String[] args, final List<String> input)
+            throws IllegalAccessException {
+        return runMethod(null, main, input, (Object) args).map(Pair::second);
     }
 
     public final boolean test(final A args, final I input) throws ReflectiveOperationException {
-        List<String> output = runMain(convertArgs(args), convertInput(input));
+        List<String> output = runMain(convertArgs(args), convertInput(input)).getValue();
         return checkMain(args, input, convertOutput(output));
     }
     protected abstract List<String> convertInput(final I input);
