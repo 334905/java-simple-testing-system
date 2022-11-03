@@ -55,4 +55,11 @@ public interface Expected<T, E extends Exception> {
             }
         };
     }
+    static <T> Expected<T, Exception> ofError(final Throwable throwable) {
+        if (throwable instanceof Exception exception) {
+            return Expected.ofError(exception);
+        } else {
+            throw (Error) throwable;
+        }
+    }
 }

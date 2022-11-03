@@ -51,15 +51,7 @@ public abstract class ClassTester {
         try {
             return Expected.ofValue(method.invoke(instance, args));
         } catch (final InvocationTargetException e) {
-            if (e.getTargetException() instanceof Exception exception) {
-                return Expected.ofError(exception);
-            } else {
-                throw new AssertionError(
-                        "Calling method " + method.getName()
-                                + " of class" + aClass.getName()
-                                + " caused error throwing (see `Caused by`)",
-                        e.getTargetException());
-            }
+            return Expected.ofError(e.getTargetException());
         }
     }
 
