@@ -1,7 +1,5 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
-import base.IntArrayList;
-import base.testers.MainTester;
 import reverse.ReverseTester;
 
 import java.io.BufferedWriter;
@@ -9,10 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class ReverseTest {
     private static final ExtendedRandom random = new ExtendedRandom();

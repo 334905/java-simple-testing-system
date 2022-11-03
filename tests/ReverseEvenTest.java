@@ -1,6 +1,5 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
-import base.IntArrayList;
 import reverse.ReverseEvenTester;
 
 import java.io.BufferedWriter;
