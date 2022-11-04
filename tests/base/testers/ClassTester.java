@@ -4,6 +4,7 @@ import base.expected.Expected;
 import base.pairs.Pair;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -46,10 +47,19 @@ public abstract class ClassTester {
         }
     }
 
-    protected final Expected<Object, Exception> runMethod(final Object instance, final Method method, final Object... args)
+    protected final <T> Expected<T, Exception> runConstructor(final Constructor<T> constructor, final Object... args)
+            throws IllegalAccessException, InstantiationException {
+        try {
+            return Expected.ofValue(constructor.newInstance(args));
+        } catch (final InvocationTargetException e) {
+            return Expected.ofError(e.getTargetException());
+        }
+    }
+
+    protected final <T> Expected<T, Exception> runMethod(final Object instance, final Method method, final Object... args)
             throws IllegalAccessException {
         try {
-            return Expected.ofValue(method.invoke(instance, args));
+            return Expected.ofValue((T) method.invoke(instance, args));
         } catch (final InvocationTargetException e) {
             return Expected.ofError(e.getTargetException());
         }
