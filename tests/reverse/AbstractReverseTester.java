@@ -15,6 +15,78 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
 
     final ExtendedRandom random;
 
+    public static class IntArrayList {
+        private int[] data = new int[0];
+        private int size = 0;
+
+        public static IntArrayList of(int[] data) throws NullPointerException {
+            IntArrayList list = new IntArrayList();
+            list.data = Arrays.copyOf(data, data.length);
+            list.size = data.length;
+            return list;
+        }
+
+        public IntArrayList() {
+        }
+
+        public void add(int elem) {
+            if (size == data.length) {
+                data = Arrays.copyOf(data, size * 2 + 1);
+            }
+            data[size++] = elem;
+        }
+
+        public void remove() {
+            size--;
+        }
+
+        public int get(int index) throws IndexOutOfBoundsException {
+            if (index >= size) {
+                throw new IndexOutOfBoundsException("Index " + index + " is out of bounds for size " + size);
+            } else {
+                return data[index];
+            }
+        }
+
+        public void set(int index, int value) throws IndexOutOfBoundsException {
+            if (index >= size) {
+                throw new IndexOutOfBoundsException("Index " + index + " is out of bounds for size " + size);
+            } else {
+                data[index] = value;
+            }
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        public int size() {
+            return size;
+        }
+
+        public void trimToSize() {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder("[");
+            for (int i = 0; i < size; i++) {
+                builder.append(data[i]);
+                builder.append(' ');
+            }
+            if (size != 0) {
+                builder.deleteCharAt(builder.length() - 1);
+            }
+            builder.append(']');
+            return builder.toString();
+        }
+
+        public int[] toArray() {
+            return Arrays.copyOf(data, size);
+        }
+    }
+
     @Override
     protected List<String> convertInput(final int[][] input) {
         Supplier<String> spaces = () -> random.nextStringFrom(1, 10, " ");
