@@ -18,7 +18,7 @@ public class IntArrayListTest {
         expectTrue(!cond, message);
     }
 
-    private static <T> void expectEqual(final Object first, final Object second, final String message) {
+    private static void expectEqual(final Object first, final Object second, final String message) {
         expectTrue(Objects.equals(first, second), message);
     }
 
