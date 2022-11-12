@@ -3,7 +3,6 @@ import base.IndentingWriter;
 import int_array_list.IntArrayListTester;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Objects;
