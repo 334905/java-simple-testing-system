@@ -24,8 +24,11 @@ public abstract class MainTester<A, I, O> extends ClassTester {
         List<String> output = runMain(convertArgs(args), convertInput(input)).getValue();
         return checkMain(args, input, convertOutput(output));
     }
+
     protected abstract List<String> convertInput(final I input);
+
     protected abstract String[] convertArgs(final A args);
+
     protected abstract O convertOutput(final List<String> output);
 
     protected abstract boolean checkMain(final A args, final I input, final O output);
