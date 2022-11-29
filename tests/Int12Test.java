@@ -15,21 +15,21 @@ public class Int12Test {
                                     final String firstRepr, final String secondRepr)
             throws IllegalAccessException {
         expectTrue(tester.compare(first, second) == 0,
-                "Expected " + firstRepr + " == " + secondRepr);
+                "Expected \"" + firstRepr + " == " + secondRepr + "\"");
     }
 
     private static void expectLess(final Int12Tester tester,
                                    final Object first, final Object second,
                                    final String firstRepr, final String secondRepr)
             throws IllegalAccessException {
-        expectTrue(tester.compare(first, second) < 0, "Expected " + firstRepr + " < " + secondRepr);
+        expectTrue(tester.compare(first, second) < 0, "Expected \"" + firstRepr + " < " + secondRepr + "\"");
     }
 
     private static void expectGreater(final Int12Tester tester,
                                       final Object first, final Object second,
                                       final String firstRepr, final String secondRepr)
             throws IllegalAccessException {
-        expectTrue(tester.compare(first, second) > 0, "Expected " + firstRepr + " > " + secondRepr);
+        expectTrue(tester.compare(first, second) > 0, "Expected \"" + firstRepr + " > " + secondRepr + "\"");
     }
 
     private static void expectEqual(final Int12Tester tester,
