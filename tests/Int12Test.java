@@ -1,61 +1,10 @@
-import int_n.Int12Tester;
+import int_n.IntNTestBase;
+import int_n.IntNTester;
 
-public class Int12Test {
-    private static void expectTrue(final boolean cond, final String message) {
-        if (!cond)
-            throw new AssertionError(message);
-    }
-
-    private static void expectFalse(final boolean cond, final String message) {
-        expectTrue(!cond, message);
-    }
-
-    private static void expectEqual(final Int12Tester tester,
-                                    final Object first, final Object second,
-                                    final String firstRepr, final String secondRepr)
-            throws IllegalAccessException {
-        expectTrue(tester.compare(first, second) == 0,
-                "Expected \"" + firstRepr + " == " + secondRepr + "\"");
-    }
-
-    private static void expectLess(final Int12Tester tester,
-                                   final Object first, final Object second,
-                                   final String firstRepr, final String secondRepr)
-            throws IllegalAccessException {
-        expectTrue(tester.compare(first, second) < 0, "Expected \"" + firstRepr + " < " + secondRepr + "\"");
-    }
-
-    private static void expectGreater(final Int12Tester tester,
-                                      final Object first, final Object second,
-                                      final String firstRepr, final String secondRepr)
-            throws IllegalAccessException {
-        expectTrue(tester.compare(first, second) > 0, "Expected \"" + firstRepr + " > " + secondRepr + "\"");
-    }
-
-    private static void expectEqual(final Int12Tester tester,
-                                    final short first, final short second,
-                                    final String firstRepr, final String secondRepr)
-            throws IllegalAccessException, InstantiationException {
-        expectEqual(tester, tester.create(first), tester.create(second), firstRepr, secondRepr);
-    }
-
-    private static void expectLess(final Int12Tester tester,
-                                   final short first, final short second,
-                                   final String firstRepr, final String secondRepr)
-            throws IllegalAccessException, InstantiationException {
-        expectLess(tester, tester.create(first), tester.create(second), firstRepr, secondRepr);
-    }
-
-    private static void expectGreater(final Int12Tester tester,
-                                      final short first, final short second,
-                                      final String firstRepr, final String secondRepr)
-            throws IllegalAccessException, InstantiationException {
-        expectGreater(tester, tester.create(first), tester.create(second), firstRepr, secondRepr);
-    }
-
+public class Int12Test extends IntNTestBase {
     public static void main(String[] args)
             throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException {
-        final Int12Tester tester = new Int12Tester();
+        final IntNTester tester = new IntNTester("Int12");
 
         expectEqual(tester, (short) 0, (short) 0, "0", "0");
         expectGreater(tester, (short) 1, (short) 0, "1", "0");

@@ -5,7 +5,7 @@ import base.testers.ClassTester;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class Int12Tester extends ClassTester {
+public class IntNTester extends ClassTester {
     private final Method add;
     private final Method subtract;
     private final Method multiply;
@@ -16,9 +16,9 @@ public class Int12Tester extends ClassTester {
     public final Object MAX_VALUE;
     public final Object MIN_VALUE;
 
-    public Int12Tester()
+    public IntNTester(final String className)
             throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
-        super("Int12");
+        super(className);
 
         add = aClass.getMethod("add", aClass);
         subtract = aClass.getMethod("subtract", aClass);
