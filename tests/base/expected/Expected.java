@@ -17,6 +17,13 @@ public interface Expected<T, E extends Exception> {
     default T getValueOr(final T defaultValue) {
         return hasValue() ? getValue() : defaultValue;
     }
+    default <E1 extends Error> T getValueOrThrow(final E1 error) throws E1 {
+        if (hasValue()) {
+            return getValue();
+        } else {
+            throw error;
+        }
+    }
 
     static <T, E extends Exception> Expected<T, E> ofValue(final T value) {
         return new Expected<>() {
