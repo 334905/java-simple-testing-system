@@ -229,5 +229,24 @@ public class UtilsTest {
                 }
             });
         });
+        writer.write("Testing mismatch:\n");
+        writer.scope(() -> {
+            if (tester.mismatch(new Integer[0], new Integer[0]) != -1) {
+                throw new AssertionError("Expected mismatch(new Integer[0], new Integer[0]) to be equal to -1.");
+            }
+            if (tester.mismatch(new Integer[]{1, 2, 3, 1000}, new Integer[]{1, 2, 3, 1000}) != -1) {
+                throw new AssertionError("Expected mismatch(new Integer[]{1, 2, 3, 1000}, new Integer[]{1, 2, 3, 1000}) to be equal to -1.");
+            }
+            if (tester.mismatch(new Integer[]{1, 2, 3, 4}, new Integer[]{1, 2, 3, 5}) != 3) {
+                throw new AssertionError("Expected mismatch(new Integer[]{1, 2, 3, 4}, new Integer[]{1, 2, 3, 5}) to be equal to 3.");
+            }
+            if (tester.mismatch(new Integer[]{1, 2, 3, 4}, new Integer[]{1, 2, 3}) != 3) {
+                throw new AssertionError("Expected mismatch(new Integer[]{1, 2, 3, 4}, new Integer[]{1, 2, 3}) to be equal to 3.");
+            }
+            if (tester.mismatch(new Integer[0], new Integer[]{1, 2, 3}) != 0) {
+                throw new AssertionError("Expected mismatch(new Integer[0], new Integer[]{1, 2, 3}) to be equal to 0.");
+            }
+        });
+        writer.write("Tests passed.\n");
     }
 }
