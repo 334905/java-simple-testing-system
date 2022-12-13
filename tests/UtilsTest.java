@@ -88,7 +88,7 @@ public class UtilsTest {
         }
 
         public String toString(Object[] a) throws IllegalAccessException {
-            return this.<String>runMethod(null, toStringArray, a).getValue();
+            return this.<String>runMethod(null, toStringArray, (Object) a).getValue();
         }
 
         public int mismatch(Object[] a, Object[] b) throws IllegalAccessException {
@@ -167,18 +167,65 @@ public class UtilsTest {
             writer.write("Testing toString(Object):\n");
             writer.scope(() -> {
                 if (!tester.toString((Object) null).equals("null")) {
-                    throw new AssertionError("Expected tester.toString(null) to be equal to \"null\".");
+                    throw new AssertionError("Expected toString(null) to be equal to \"null\".");
                 }
                 if (!tester.toString(123).equals("123")) {
-                    throw new AssertionError("Expected tester.toString(123) to be equal to \"123\".");
+                    throw new AssertionError("Expected toString(123) to be equal to \"123\".");
                 }
                 final Object obj = new Object();
                 if (!tester.toString(obj).equals(obj.toString())) {
-                    throw new AssertionError("Expected tester.toString(new Object()) to be equal to this object.toString().");
+                    throw new AssertionError("Expected toString(new Object()) to be equal to this object.toString().");
                 }
                 final Object arr = new int[10];
                 if (!tester.toString(arr).equals(arr.toString())) {
-                    throw new AssertionError("Expected tester.toString((Object) new int[10]) to be equal to [I@address.");
+                    throw new AssertionError("Expected toString((Object) new int[10]) to be equal to [I@address.");
+                }
+            });
+            writer.write("Testing toString(Object, String):\n");
+            writer.scope(() -> {
+                if (!tester.toString("hello", "world").equals("hello")) {
+                    throw new AssertionError("Expected toString(\"hello\", \"world\") to be equal to hello.");
+                }
+                if (!tester.toString("AMOGUS", null).equals("AMOGUS")) {
+                    throw new AssertionError("Expected toString(\"AMOGUS\", null) to be equal to AMOGUS.");
+                }
+                Object obj = new Object();
+                if (!tester.toString(obj, null).equals(obj.toString())) {
+                    throw new AssertionError(
+                            "Expected toString(new Object(), null) to be equal to java.lang.Object@address.");
+                }
+                if (tester.toString(null, null) != null) {
+                    throw new AssertionError(
+                            "Expected toString(null, null) to be equal to null.");
+                }
+                if (tester.toString(null, "null-default-abacaba") != "null-default-abacaba") {
+                    throw new AssertionError(
+                            "Expected toString(null, \"null-default-abacaba\") to be equal to \"null-default-abacaba\".");
+                }
+            });
+            writer.write("Testing toString(Object[]):\n");
+            writer.scope(() -> {
+                if (!tester.toString((Object[]) null).equals("null")) {
+                    throw new AssertionError("Expected toString(null) to be equal to \"null\".");
+                }
+                if (!tester.toString(new Integer[0]).equals("[]")) {
+                    throw new AssertionError("Expected toString(new Integer[0]) to be equal to \"[]\".");
+                }
+                if (!tester.toString(new Object[]{"hello", "cruel", "world"}).equals("[hello, cruel, world]")) {
+                    throw new AssertionError(
+                            "Expected toString(new Object[]{\"hello\", \"cruel\", \"world\"}) to be equal to [hello, cruel, world].");
+                }
+                if (!tester.toString(new Object[]{"hello", 11, null}).equals("[hello, 11, null]")) {
+                    throw new AssertionError(
+                            "Expected toString(new Object[]{\"hello\", 11, null}) to be equal to [hello, 11, null].");
+                }
+                Object obj = new Object();
+                int[] ints = new int[10];
+                String[] string = new String[3];
+                if (!tester.toString(new Object[]{obj, null, ints, string}).equals(String.format("[%s, %s, %s, %s]", obj, null, ints, string))) {
+                    throw new AssertionError(
+                            "Expected toString(new Object[]{new Object(), null, new int[10], new String[3]}) to be equal" +
+                                    " to [java.lang.Object@???, null, [I@???, [Ljava.lang.String;@???].");
                 }
             });
         });
