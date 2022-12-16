@@ -246,6 +246,12 @@ public class UtilsTest {
             if (tester.mismatch(new Integer[0], new Integer[]{1, 2, 3}) != 0) {
                 throw new AssertionError("Expected mismatch(new Integer[0], new Integer[]{1, 2, 3}) to be equal to 0.");
             }
+            if (tester.mismatch(new Integer[]{1, null, 2}, new Integer[]{1, null, 3}) != 2) {
+                throw new AssertionError("Expected mismatch(new Integer[]{1, null, 2}, new Integer[]{1, null, 3}) to be equal to 2.");
+            }
+            if (tester.mismatch(new Integer[]{null, null, null}, new Integer[]{null}) != 1) {
+                throw new AssertionError("Expected mismatch(new Integer[]{null, null, null}, new Integer[]{null}) to be equal to 1.");
+            }
         });
         writer.write("Tests passed.\n");
     }
