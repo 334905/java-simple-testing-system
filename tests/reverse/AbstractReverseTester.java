@@ -91,12 +91,13 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
     protected List<String> convertInput(final int[][] input) {
         Supplier<String> spaces = () -> random.nextStringFrom(1, 10, " ");
         return Arrays.stream(input).map(
-                a -> Arrays.stream(a)
-                        .mapToObj(Integer::toString)
-                        .reduce((s1, s2) -> s1 + spaces.get() + s2)
-                        .map(s -> spaces.get() + s + spaces.get())
-                        .orElseGet(spaces)
-        ).toList();
+                line -> {
+                    final StringBuilder sb = new StringBuilder(spaces.get());
+                    for (final int val : line) {
+                        sb.append(val).append(spaces.get());
+                    }
+                    return sb.toString();
+                }).toList();
     }
 
     @Override
