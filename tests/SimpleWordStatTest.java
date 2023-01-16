@@ -2,6 +2,7 @@ import base.pairs.DualCollector;
 import base.pairs.Pair;
 import word_stat.WordStatTestBase;
 import word_stat.WordStatTesterBase;
+import word_stat.stats.WordAndCount;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -12,10 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SimpleWordStatTest extends WordStatTestBase<SimpleWordStatTest.WordAndCount> {
-    record WordAndCount(String word, int count) {
-    }
-
+public class SimpleWordStatTest extends WordStatTestBase<WordAndCount> {
     private static class SimpleWordStatTester extends WordStatTesterBase<WordAndCount> {
         public SimpleWordStatTester() throws ClassNotFoundException, NoSuchMethodException {
             super("SimpleWordStat",

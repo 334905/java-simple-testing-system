@@ -46,4 +46,11 @@ public class Characters {
     public static final String LETTERS_GREEK_LOWER = "\u03b1\u03b2\u03b3\u03b4\u03b5\u03b6\u03b7\u03b8\u03b9\u03ba\u03bb\u03bc\u03bd\u03be\u03bf\u03c0\u03c1\u03c2\u03c3\u03c4\u03c5\u03c6\u03c7\u03c8\u03c9";
     public static final String LETTERS_GREEK_UPPER = LETTERS_GREEK_LOWER.toUpperCase();
     public static final String LETTERS_GREEK = LETTERS_GREEK_UPPER + LETTERS_GREEK_LOWER;
+
+    public static final String DASHES;
+    static {
+        final int[] dashes = IntStream.rangeClosed(0, Character.MAX_VALUE)
+                .filter(ch -> Character.getType(ch) == Character.DASH_PUNCTUATION).toArray();
+        DASHES = new String(dashes, 0, dashes.length);
+    }
 }

@@ -4,22 +4,21 @@ import word_stat.WordStatTesterBase;
 import word_stat.stats.WordAndCount;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class WordStatLexicalTest extends WordStatTestBase<WordAndCount> {
-    protected WordStatLexicalTest() throws ClassNotFoundException, NoSuchMethodException {
-        super(new WordStatLexicalTester());
+public class WordStatWordsTest extends WordStatTestBase<WordAndCount> {
+    protected WordStatWordsTest() throws ClassNotFoundException, NoSuchMethodException {
+        super(new WordStatWordsTester());
     }
 
-    private static class WordStatLexicalTester extends WordStatTesterBase<WordAndCount> {
-        public WordStatLexicalTester() throws ClassNotFoundException, NoSuchMethodException {
-            super("WordStatLexical", Pattern.compile("[^" + Pattern.quote(Characters.WHITESPACES) + "]++"));
+    private static class WordStatWordsTester extends WordStatTesterBase<WordAndCount> {
+        public WordStatWordsTester() throws ClassNotFoundException, NoSuchMethodException {
+            super("WordStatWords", Pattern.compile("(?:'|\\p{L}|\\p{Pd})++"));
         }
 
         @Override
@@ -37,6 +36,16 @@ public class WordStatLexicalTest extends WordStatTestBase<WordAndCount> {
         }
     }
 
+    private static final String CHARACTERS = "'" + Characters.DASHES + Characters.LETTERS;
+    private static final String NOT_CHARACTERS;
+
+    static {
+        int[] not_chars = IntStream.rangeClosed(0, Character.MAX_VALUE)
+                .filter(c -> (c < '\uD800' || c > '\uDFFF') && !Character.isLetter(c) && Character.getType(c) != Character.DASH_PUNCTUATION && c != '\'')
+                .toArray();
+        NOT_CHARACTERS = new String(not_chars, 0, not_chars.length);
+    }
+
     private void main() throws ReflectiveOperationException, IOException {
         test("To be, or not to be, that is the question:");
         test("Monday's child is fair of face.", "Tuesday's child is full of grace.");
@@ -51,21 +60,15 @@ public class WordStatLexicalTest extends WordStatTestBase<WordAndCount> {
         // test("\t σω   ςα\t \tςα   ςα\tσω  ");
         test("\t\u03c3\u03c9   \u03c2\u03b1\t \t\u03c2\u03b1   \u03c2\u03b1\t\u03c3\u03c9");
 
-        randomTest(10, 1, 3, 1, 2, Characters.LETTERS_ENGLISH, " ");
-        randomTest(15, 1, 3, 1, 20, Characters.LETTERS_RUSSIAN, " \t");
-        randomTest(35, 1, 4, 1, 50, Characters.LETTERS_GREEK + Characters.LETTERS_RUSSIAN, " \t");
-        randomTest(100,
-                1, 5,
-                1, 50,
-                Characters.LETTERS_GREEK
-                        + Characters.LETTERS_RUSSIAN
-                        + Characters.LETTERS_ENGLISH
-                        + Characters.DECIMALS[0] + Characters.DECIMALS[9]
-                        + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
-                " \t\u00B0");
+        randomTest(10, 1, 3, 1, 2, Characters.LETTERS_ENGLISH + Characters.DASHES + "'", " ");
+        randomTest(15, 1, 3, 1, 20, Characters.LETTERS_RUSSIAN + Characters.DASHES + "'", ",.;:!\"?()[]{} \t");
+        randomTest(35, 1, 4, 1, 50, CHARACTERS, " \t");
+        randomTest(100000, 1, 50, 1, 5, CHARACTERS, NOT_CHARACTERS);
+        randomTest(10000, 1, 50, 1, 25, CHARACTERS, NOT_CHARACTERS);
+        System.out.println("Tests passed.");
     }
 
     public static void main(final String[] args) throws ReflectiveOperationException, IOException {
-        new WordStatLexicalTest().main();
+        new WordStatWordsTest().main();
     }
 }
