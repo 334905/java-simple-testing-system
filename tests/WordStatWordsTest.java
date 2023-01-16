@@ -62,7 +62,7 @@ public class WordStatWordsTest extends WordStatTestBase<WordAndCount> {
 
         randomTest(10, 1, 3, 1, 2, Characters.LETTERS_ENGLISH + Characters.DASHES + "'", " ");
         randomTest(15, 1, 3, 1, 20, Characters.LETTERS_RUSSIAN + Characters.DASHES + "'", ",.;:!\"?()[]{} \t");
-        randomTest(35, 1, 4, 1, 50, CHARACTERS, " \t");
+        randomTest(35, 1, 4, 1, 50, CHARACTERS, ",.;:!\"?()[]{} \t\u00B0");
         randomTest(100000, 1, 50, 1, 5, CHARACTERS, NOT_CHARACTERS);
         randomTest(10000, 1, 50, 1, 25, CHARACTERS, NOT_CHARACTERS);
         System.out.println("Tests passed.");
