@@ -11,11 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class ReverseTest {
-    private static final ExtendedRandom random = new ExtendedRandom();
-    private static final IndentingWriter writer =
+    protected static final ExtendedRandom random = new ExtendedRandom();
+    protected static final IndentingWriter writer =
             new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
 
-    private static void test(final ReverseTester tester, int[][] input) throws ReflectiveOperationException, IOException {
+    protected static void test(final ReverseTester tester, int[][] input) throws ReflectiveOperationException, IOException {
         writer.write("Testing ");
         writer.write(Arrays.stream(input).map(Arrays::toString).toArray(String[]::new));
         writer.write('\n');
@@ -24,7 +24,7 @@ public class ReverseTest {
         }
     }
 
-    private static void randomTest(final ReverseTester tester,
+    protected static void randomTest(final ReverseTester tester,
                                    final int size, final int linesCount, final int min, final int max)
             throws ReflectiveOperationException, IOException {
         IntArrayList[] lines = new IntArrayList[linesCount];
@@ -35,8 +35,7 @@ public class ReverseTest {
         test(tester, Arrays.stream(lines).map(IntArrayList::toArray).toArray(int[][]::new));
     }
 
-    public static void main(final String[] args) throws Exception {
-        final ReverseTester tester = new ReverseTester(random);
+    protected static void runTests(final ReverseTester tester) throws Exception {
         writer.write("Testing statement* tests...\n");
         writer.scope(() -> {
             test(tester, new int[][]{
@@ -126,5 +125,10 @@ public class ReverseTest {
                 randomTest(tester, 100000, 100000, Integer.MIN_VALUE, Integer.MAX_VALUE);
             });
         });
+    }
+
+    public static void main(final String[] args) throws Exception {
+        final ReverseTester tester = new ReverseTester(random);
+        runTests(tester);
     }
 }
