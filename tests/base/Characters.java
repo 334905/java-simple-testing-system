@@ -1,6 +1,7 @@
 package base;
 
-import java.nio.CharBuffer;
+import base.pairs.Pair;
+
 import java.util.stream.IntStream;
 
 public class Characters {
@@ -11,18 +12,19 @@ public class Characters {
         WHITESPACES = new String(whitespaces, 0, whitespaces.length);
     }
 
-    public static final String[] DECIMALS = new String[10];
+    public static final String[] DIGITS = new String[Character.MAX_RADIX];
 
     static {
-        final StringBuilder[] builders = new StringBuilder[DECIMALS.length];
+        final StringBuilder[] builders = new StringBuilder[DIGITS.length];
         for (int i = 0; i < builders.length; i++) {
             builders[i] = new StringBuilder();
         }
         IntStream.rangeClosed(0, Character.MAX_VALUE)
-                .filter(ch -> Character.getType(ch) == Character.DECIMAL_DIGIT_NUMBER)
-                .forEach(ch -> builders[Integer.parseInt("" + (char) ch)].append((char) ch));
-        for (int i = 0; i < DECIMALS.length; i++) {
-            DECIMALS[i] = builders[i].toString();
+                .mapToObj(c -> Pair.of(c, Character.digit(c, Character.MAX_RADIX)))
+                .filter(pair -> pair.second() != -1)
+                .forEach(pair -> builders[pair.second()].append((char) pair.first().intValue()));
+        for (int i = 0; i < DIGITS.length; i++) {
+            DIGITS[i] = builders[i].toString();
         }
     }
 
