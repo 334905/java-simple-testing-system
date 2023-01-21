@@ -35,7 +35,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
         private int[] data = new int[0];
         private int size = 0;
 
-        public static IntArrayList of(int[] data) throws NullPointerException {
+        public static IntArrayList of(final int[] data) throws NullPointerException {
             IntArrayList list = new IntArrayList();
             list.data = Arrays.copyOf(data, data.length);
             list.size = data.length;
@@ -45,7 +45,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
         public IntArrayList() {
         }
 
-        public void add(int elem) {
+        public void add(final int elem) {
             if (size == data.length) {
                 data = Arrays.copyOf(data, size * 2 + 1);
             }
@@ -56,7 +56,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
             size--;
         }
 
-        public int get(int index) throws IndexOutOfBoundsException {
+        public int get(final int index) throws IndexOutOfBoundsException {
             if (index >= size) {
                 throw new IndexOutOfBoundsException("Index " + index + " is out of bounds for size " + size);
             } else {
@@ -64,7 +64,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
             }
         }
 
-        public void set(int index, int value) throws IndexOutOfBoundsException {
+        public void set(final int index, final int value) throws IndexOutOfBoundsException {
             if (index >= size) {
                 throw new IndexOutOfBoundsException("Index " + index + " is out of bounds for size " + size);
             } else {
@@ -86,7 +86,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder("[");
+            final StringBuilder builder = new StringBuilder("[");
             for (int i = 0; i < size; i++) {
                 builder.append(data[i]);
                 builder.append(' ');
@@ -105,7 +105,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
 
     @Override
     protected List<String> convertInput(final int[][] input) {
-        Supplier<String> spaces = () -> random.nextStringFrom(1, 10, " ");
+        final Supplier<String> spaces = () -> random.nextStringFrom(1, 10, " ");
         return Arrays.stream(input).map(
                 line -> {
                     final StringBuilder sb = new StringBuilder(spaces.get());
