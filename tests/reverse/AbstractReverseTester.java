@@ -13,6 +13,22 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
         this.random = random;
     }
 
+    private static final String[] EOL = new String[]{"\n", "\r", "\r\n"};
+
+    @Override
+    protected String lineSeparator() {
+        return EOL[random.nextInt(3)];
+    }
+
+    @Override
+    protected String endOfInput() {
+        if (random.nextInt(4) == 0) {
+            return "";
+        } else {
+            return lineSeparator();
+        }
+    }
+
     final ExtendedRandom random;
 
     public static class IntArrayList {

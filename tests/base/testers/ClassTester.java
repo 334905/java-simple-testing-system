@@ -65,6 +65,14 @@ public abstract class ClassTester {
         }
     }
 
+    protected String lineSeparator() {
+        return System.lineSeparator();
+    }
+
+    protected String endOfInput() {
+        return "";
+    }
+
     protected final Expected<Pair<Object, List<String>>, Exception>
     runMethod(final Object instance, final Method method,
               final List<String> input, final Object... args) throws IllegalAccessException {
@@ -75,7 +83,8 @@ public abstract class ClassTester {
         System.setIn(
                 new ByteArrayInputStream(
                         input.stream().map(StringBuilder::new)
-                                .reduce((s1, s2) -> s1.append(System.lineSeparator()).append(s2))
+                                .reduce((s1, s2) -> s1.append(lineSeparator()).append(s2))
+                                .map(s -> s.append(endOfInput()))
                                 .map(Object::toString)
                                 .orElse("")
                                 .getBytes(StandardCharsets.UTF_8)
