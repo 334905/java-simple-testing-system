@@ -1,39 +1,6 @@
-import base.ExtendedRandom;
-import base.IndentingWriter;
 import reverse.testers.ReverseEvenTester;
-import static reverse.testers.AbstractReverseTester.IntArrayList;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-public class ReverseEvenTest {
-    private static final ExtendedRandom random = new ExtendedRandom();
-    private static final IndentingWriter writer =
-            new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
-
-    private static void test(final ReverseEvenTester tester, int[][] input) throws ReflectiveOperationException, IOException {
-        writer.write("Testing ");
-        writer.write(Arrays.stream(input).map(Arrays::toString).toArray(String[]::new));
-        writer.write('\n');
-        if (!tester.test(null, input)) {
-            throw new AssertionError("Failure.");
-        }
-    }
-
-    private static void randomTest(final ReverseEvenTester tester,
-                                   final int size, final int linesCount, final int min, final int max)
-            throws ReflectiveOperationException, IOException {
-        IntArrayList[] lines = new IntArrayList[linesCount];
-        for (int i = 0; i < lines.length; i++) {
-            lines[i] = new IntArrayList();
-        }
-        random.ints(size, min, max).forEach(n -> lines[random.nextInt(lines.length)].add(n));
-        test(tester, Arrays.stream(lines).map(IntArrayList::toArray).toArray(int[][]::new));
-    }
-
+public class ReverseEvenTest extends reverse.BaseTest {
     public static void main(final String[] args) throws Exception {
         final ReverseEvenTester tester = new ReverseEvenTester(random);
         writer.write("Testing statement* tests...\n");
