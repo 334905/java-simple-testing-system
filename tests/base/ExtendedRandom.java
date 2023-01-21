@@ -16,6 +16,10 @@ public class ExtendedRandom extends Random {
         return source.charAt(nextInt(source.length()));
     }
 
+    public <T> T nextElementFrom(final T[] array) {
+        return array[nextInt(array.length)];
+    }
+
     public String nextStringFrom(final int size, final String source) {
         StringBuilder sb = new StringBuilder(size);
         for (int i = 0; i < size; i++) {

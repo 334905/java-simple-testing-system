@@ -31,7 +31,7 @@ public class BaseTest {
         for (int i = 0; i < lines.length; i++) {
             lines[i] = new AbstractReverseTester.IntArrayList();
         }
-        random.ints(size, min, max).forEach(n -> lines[random.nextInt(lines.length)].add(n));
+        random.ints(size, min, max).forEach(n -> random.nextElementFrom(lines).add(n));
         test(tester, Arrays.stream(lines).map(AbstractReverseTester.IntArrayList::toArray).toArray(int[][]::new));
     }
 }

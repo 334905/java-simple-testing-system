@@ -17,7 +17,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
 
     @Override
     protected String lineSeparator() {
-        return EOL[random.nextInt(3)];
+        return random.nextElementFrom(EOL);
     }
 
     @Override
@@ -105,7 +105,7 @@ public abstract class AbstractReverseTester extends MainTester<Void, int[][], in
 
     @Override
     protected List<String> convertInput(final int[][] input) {
-        final Supplier<String> spaces = () -> random.nextStringFrom(1, 10, " ");
+        final Supplier<String> spaces = () -> random.nextStringFrom(1, 3, " ");
         return Arrays.stream(input).map(
                 line -> {
                     final StringBuilder sb = new StringBuilder(spaces.get());
