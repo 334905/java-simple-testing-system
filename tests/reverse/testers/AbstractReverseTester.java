@@ -1,4 +1,4 @@
-package reverse;
+package reverse.testers;
 
 import base.ExtendedRandom;
 import base.testers.MainTester;

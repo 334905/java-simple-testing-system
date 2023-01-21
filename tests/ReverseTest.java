@@ -1,8 +1,8 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
-import reverse.ReverseTester;
+import reverse.testers.ReverseTester;
 
-import static reverse.AbstractReverseTester.IntArrayList;
+import static reverse.testers.AbstractReverseTester.IntArrayList;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

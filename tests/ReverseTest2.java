@@ -1,4 +1,4 @@
-import reverse.ReverseTester;
+import reverse.testers.ReverseTester;
 
 public class ReverseTest2 extends ReverseTest {
     public static void main(String[] args) throws Exception {
