@@ -67,7 +67,7 @@ public class WordStatScannedTest extends WordStatTestBase<WordAndCount> {
                 Characters.LETTERS_GREEK
                         + Characters.LETTERS_RUSSIAN
                         + Characters.LETTERS_ENGLISH
-                        + Characters.DECIMALS[0] + Characters.DECIMALS[9]
+                        + Characters.DIGITS[0] + Characters.DIGITS[9]
                         + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
                 " \t\u00B0");
     }

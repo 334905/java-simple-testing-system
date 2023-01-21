@@ -4,10 +4,8 @@ import word_stat.WordStatTesterBase;
 import word_stat.stats.WordAndCount;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,7 +58,7 @@ public class WordStatLexicalTest extends WordStatTestBase<WordAndCount> {
                 Characters.LETTERS_GREEK
                         + Characters.LETTERS_RUSSIAN
                         + Characters.LETTERS_ENGLISH
-                        + Characters.DECIMALS[0] + Characters.DECIMALS[9]
+                        + Characters.DIGITS[0] + Characters.DIGITS[9]
                         + "~!@#$%^&*()<>?:\"{}|[]\\;',./",
                 " \t\u00B0");
     }
