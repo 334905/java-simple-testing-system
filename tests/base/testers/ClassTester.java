@@ -1,5 +1,6 @@
 package base.testers;
 
+import base.StringInputStream;
 import base.expected.Expected;
 import base.pairs.Pair;
 
@@ -81,13 +82,13 @@ public abstract class ClassTester {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         System.setIn(
-                new ByteArrayInputStream(
+                new StringInputStream(
                         input.stream().map(StringBuilder::new)
                                 .reduce((s1, s2) -> s1.append(lineSeparator()).append(s2))
                                 .map(s -> s.append(endOfInput()))
                                 .map(Object::toString)
-                                .orElse("")
-                                .getBytes(StandardCharsets.UTF_8)
+                                .orElse(""),
+                        StandardCharsets.UTF_8
                 )
         );
         try {
