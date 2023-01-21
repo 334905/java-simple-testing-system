@@ -22,7 +22,7 @@ public class Characters {
         IntStream.rangeClosed(0, Character.MAX_VALUE)
                 .mapToObj(c -> Pair.of(c, Character.digit(c, Character.MAX_RADIX)))
                 .filter(pair -> pair.second() != -1)
-                .forEach(pair -> builders[pair.second()].append((char) pair.first().intValue()));
+                .forEachOrdered(pair -> builders[pair.second()].append((char) pair.first().intValue()));
         for (int i = 0; i < DIGITS.length; i++) {
             DIGITS[i] = builders[i].toString();
         }
@@ -50,9 +50,11 @@ public class Characters {
     public static final String LETTERS_GREEK = LETTERS_GREEK_UPPER + LETTERS_GREEK_LOWER;
 
     public static final String DASHES;
+
     static {
         final int[] dashes = IntStream.rangeClosed(0, Character.MAX_VALUE)
-                .filter(ch -> Character.getType(ch) == Character.DASH_PUNCTUATION).toArray();
+                .filter(ch -> Character.getType(ch) == Character.DASH_PUNCTUATION)
+                .toArray();
         DASHES = new String(dashes, 0, dashes.length);
     }
 }
