@@ -10,17 +10,17 @@ public class ReverseHexTest extends reverse.BaseTest {
                     {3}
             });
             test(tester, new int[][]{
-                    {3},
-                    {2, 1}
+                    {30},
+                    {20, 10}
             });
             test(tester, new int[][]{
-                    {1},
+                    {10},
                     {},
-                    {2, -3}
+                    {20, -30}
             });
             test(tester, new int[][]{
-                    {1, 2},
-                    {3, 4}
+                    {100, 200},
+                    {300, 400}
             });
             test(tester, new int[0][]);
             test(tester, new int[][]{
@@ -32,20 +32,20 @@ public class ReverseHexTest extends reverse.BaseTest {
                     {}
             });
             test(tester, new int[][]{
-                    {1},
+                    {100},
             });
             test(tester, new int[][]{
                     {},
                     {},
-                    {1},
+                    {100},
                     {},
             });
             test(tester, new int[][]{
                     {},
-                    {1, 2, 3},
-                    {4, 5},
+                    {100, 200, 300},
+                    {400, 500},
                     {},
-                    {6},
+                    {600},
                     {},
                     {}
             });
@@ -53,15 +53,15 @@ public class ReverseHexTest extends reverse.BaseTest {
                     {},
                     {},
                     {},
-                    {1, -2, 3, 4},
+                    {100, -200, 300, 400},
                     {},
                     {},
                     {},
-                    {-5, -6},
+                    {-500, -600},
                     {},
                     {},
                     {},
-                    {7},
+                    {700},
                     {},
                     {},
                     {}
