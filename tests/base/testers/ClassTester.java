@@ -48,6 +48,15 @@ public abstract class ClassTester {
         }
     }
 
+    protected final Method getMethod(final Class<?> returnClass, final String methodName, final Class<?>... arguments)
+            throws NoSuchMethodException {
+        final Method method = aClass.getMethod(methodName, arguments);
+        if (!method.getReturnType().equals(returnClass)) {
+            throw new AssertionError("Your method " + method + " should have " + returnClass + " return type");
+        }
+        return method;
+    }
+
     protected final <T> Expected<T, Exception> runConstructor(final Constructor<T> constructor, final Object... args)
             throws IllegalAccessException, InstantiationException {
         try {
