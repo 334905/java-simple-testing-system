@@ -246,14 +246,19 @@ public class MutableVectorArrayListTest {
         writer.write("Testing performance...\n");
         writer.scope(() -> {
             final int N = 10000000;
-            writer.write("Adding " + N + " elements...\n");
             final Object list = tester.newList();
-            long start = System.currentTimeMillis();
+            writer.write("Adding " + N + " elements...\n");
+            long addStart = System.currentTimeMillis();
             for (int i = 0; i < N; i++) {
                 tester.add(list, new MutableVector(i, -i));
             }
-            long end = System.currentTimeMillis();
-            writer.write((end - start) / 1000.0 + " seconds elapsed");
+            writer.write((System.currentTimeMillis() - addStart) / 1000.0 + " seconds elapsed\n");
+            writer.write("Removing " + N + " elements from the end...\n");
+            long removeStart = System.currentTimeMillis();
+            for (int i = 0; i < N; i++) {
+                tester.remove(list, N - i - 1);
+            }
+            writer.write((System.currentTimeMillis() - removeStart) / 1000.0 + " seconds elapsed\n");
         });
     }
 }
