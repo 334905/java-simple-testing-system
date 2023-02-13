@@ -1,5 +1,7 @@
 package base;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -17,7 +19,11 @@ public class ExtendedRandom extends Random {
     }
 
     public <T> T nextElementFrom(final T[] array) {
-        return array[nextInt(array.length)];
+        return nextElementFrom(Arrays.asList(array));
+    }
+
+    public <T> T nextElementFrom(final List<T> list) {
+        return list.get(nextInt(list.size()));
     }
 
     public String nextStringFrom(final int size, final String source) {

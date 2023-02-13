@@ -8,16 +8,16 @@ import java.lang.reflect.Method;
 
 public class MutableVectorArrayListTester extends ClassTester {
     private final Method add;
-    // private final Method addIndexed;
+    // private final Method addIndexed; REMOVED
     private final Method capacity;
     // private final Method clear;
-    // private final Method contains;
+    private final Method contains;
     // private final Method ensureCapacity;
     // private final Method equals;
     private final Method get;
-    // private final Method indexOf;
+    private final Method indexOf;
     private final Method isEmpty;
-    // private final Method lastIndexOf;
+    // private final Method lastIndexOf; REMOVED
     private final Method removeIndexed;
     // private final Method remove;
     private final Method set;
@@ -38,6 +38,9 @@ public class MutableVectorArrayListTester extends ClassTester {
         removeIndexed = getMethod(MutableVector.class, "remove", int.class);
         set = getMethod(void.class, "set", int.class, MutableVector.class);
         size = getMethod(int.class, "size");
+
+        indexOf = getMethod(int.class, "indexOf", MutableVector.class);
+        contains = getMethod(boolean.class, "contains", MutableVector.class);
 
         defaultConstructor = aClass.getConstructor();
         constructorOfCapacity = aClass.getConstructor(int.class);
@@ -70,6 +73,14 @@ public class MutableVectorArrayListTester extends ClassTester {
 
     public int size(final Object list) throws IllegalAccessException {
         return super.<Integer>runMethod(list, size).getValue();
+    }
+
+    public int indexOf(final Object list, final MutableVector vector) throws IllegalAccessException {
+        return super.<Integer>runMethod(list, indexOf, vector).getValue();
+    }
+
+    public boolean contains(final Object list, final MutableVector vector) throws IllegalAccessException {
+        return super.<Boolean>runMethod(list, contains, vector).getValue();
     }
 
     public Object newList() throws IllegalAccessException, InstantiationException {

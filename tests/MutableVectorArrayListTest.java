@@ -224,6 +224,47 @@ public class MutableVectorArrayListTest {
                             "Removing element with index " + index + " is supposed to return " + correctRemoved);
                 }
             });
+            writer.write("Testing indexOf and contains...\n");
+            writer.scope(() -> {
+                final int N = 1000;
+                final List<MutableVector> correctList = new ArrayList<>(N);
+                final Object userList = tester.newList(N);
+                final Supplier<MutableVector> randomVector = () -> new MutableVector(random.nextDouble(), random.nextDouble());
+
+                {
+                    final MutableVector vector = randomVector.get();
+                    expectEqual(tester.indexOf(userList, vector), -1,
+                            "Index of " + vector + " in empty list is supposed to be -1");
+                    expectFalse(tester.contains(userList, vector),
+                            "Empty list is supposed not to contain " + vector);
+                    tester.add(userList, vector);
+                    correctList.add(vector);
+                }
+
+                for (int i = 1; i < N; i++) {
+                    final MutableVector newVector = randomVector.get();
+                    final MutableVector oldVector = random.nextElementFrom(correctList);
+
+                    expectEqual(tester.indexOf(userList, newVector), correctList.indexOf(newVector),
+                            "Index of " + newVector + " is supposed to be equal to " + correctList.indexOf(newVector));
+                    expectEqual(tester.indexOf(userList, oldVector), correctList.indexOf(oldVector),
+                            "Index of " + oldVector + " is supposed to be equal to " + correctList.indexOf(oldVector));
+                    expectEqual(tester.contains(userList, newVector), correctList.contains(newVector),
+                            "List is supposed " + (correctList.contains(newVector) ? "" : "not ") + " to contain " + newVector);
+                    expectEqual(tester.contains(userList, oldVector), correctList.contains(oldVector),
+                            "List is supposed " + (correctList.contains(oldVector) ? "" : "not ") + " to contain " + oldVector);
+
+                    correctList.add(i % 2 == 0 ? newVector : oldVector);
+                    tester.add(userList, i % 2 == 0 ? newVector : oldVector);
+                }
+
+                for (final MutableVector vector : correctList) {
+                    expectEqual(tester.indexOf(userList, vector), correctList.indexOf(vector),
+                            "Index of " + vector + " is supposed to be equal to " + correctList.indexOf(vector));
+                    expectTrue(tester.contains(userList, vector),
+                            "List is supposed to contain " + vector);
+                }
+            });
         });
         writer.write("Testing references...\n");
         writer.scope(() -> {
