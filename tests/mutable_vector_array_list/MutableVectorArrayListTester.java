@@ -10,7 +10,7 @@ public class MutableVectorArrayListTester extends ClassTester {
     private final Method add;
     // private final Method addIndexed; REMOVED
     private final Method capacity;
-    // private final Method clear;
+    private final Method clear;
     private final Method contains;
     // private final Method ensureCapacity;
     // private final Method equals;
@@ -41,6 +41,8 @@ public class MutableVectorArrayListTester extends ClassTester {
 
         indexOf = getMethod(int.class, "indexOf", MutableVector.class);
         contains = getMethod(boolean.class, "contains", MutableVector.class);
+
+        clear = getMethod(void.class, "clear");
 
         defaultConstructor = aClass.getConstructor();
         constructorOfCapacity = aClass.getConstructor(int.class);
@@ -81,6 +83,10 @@ public class MutableVectorArrayListTester extends ClassTester {
 
     public boolean contains(final Object list, final MutableVector vector) throws IllegalAccessException {
         return super.<Boolean>runMethod(list, contains, vector).getValue();
+    }
+
+    public void clear(final Object list) throws IllegalAccessException {
+        super.<Void>runMethod(list, clear).getValue();
     }
 
     public Object newList() throws IllegalAccessException, InstantiationException {

@@ -1,18 +1,17 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
-import base.function.ThrowingRunnable;
+import base.function.ThrowingConsumer;
 import mutable_vector_array_list.MutableVector;
 import mutable_vector_array_list.MutableVectorArrayListTester;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MutableVectorArrayListTest {
     private static void expectTrue(final boolean cond, final String message) {
@@ -51,6 +50,36 @@ public class MutableVectorArrayListTest {
     private static <T extends Comparable<? super T>> void expectInRange(final T value, final T min, final T upper, final String message) {
         expectLess(value, upper, message);
         expectGreaterOrEqual(value, min, message);
+    }
+
+    private static long supposeMutableVectorsCount()
+            throws InterruptedException, IOException {
+        System.gc();
+        Thread.sleep(1000);
+        System.gc();
+        Thread.sleep(1000);
+        System.gc();
+        record ClassInfo(long instances, String className) {
+        }
+        final Pattern jmapRegex = Pattern.compile("^\\s++\\d++[^\\d]++(\\d++)[^\\d]++\\d++\\s++([^\\s]++)");
+        final Process jmapProc = Runtime.getRuntime().exec("jmap -histo " + ProcessHandle.current().pid());
+        try {
+            return jmapProc.inputReader().lines()
+                    .map(s -> {
+                        final Matcher match = jmapRegex.matcher(s);
+                        if (match.matches()) {
+                            return new ClassInfo(Long.parseLong(match.group(1)), match.group(2));
+                        } else {
+                            return null;
+                        }
+                    })
+                    .filter(c -> c != null && c.className.endsWith("mutable_vector_array_list.MutableVector"))
+                    .findAny()
+                    .map(ClassInfo::instances)
+                    .orElse(0L);
+        } finally {
+            jmapProc.destroy();
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -300,6 +329,36 @@ public class MutableVectorArrayListTest {
                 tester.remove(list, N - i - 1);
             }
             writer.write((System.currentTimeMillis() - removeStart) / 1000.0 + " seconds elapsed\n");
+        });
+        writer.write("Testing memory leaks...\n");
+        // NOT TO DELETE ALL MutableVectors!!!
+        writer.scope(() -> {
+            final ThrowingConsumer<Long, Exception> check = (expectedCount) -> {
+                final long actualCount = supposeMutableVectorsCount();
+                if (actualCount > expectedCount) {
+                    writer.write("\nMutableVectors count ( " + actualCount + ") is greater than expected (" + expectedCount + ")\n");
+                } else if (actualCount < expectedCount) {
+                    writer.write("\nMutableVectors count ( " + actualCount + ") is LESS than expected (" + expectedCount + ")\n");
+                } else {
+                    writer.write("Success\n");
+                }
+            };
+            writer.write("Testing removing from the middle...   ");
+            final Object list = tester.newList();
+            tester.add(list, new MutableVector(1, 2));
+            tester.add(list, new MutableVector(3, 4));
+            tester.add(list, new MutableVector(-2, -0.5));
+            tester.add(list, new MutableVector(5, 5));
+            tester.remove(list, 1);
+            check.accept(3L);
+            writer.write("Testing removing from the end...   ");
+            tester.remove(list, 2);
+            check.accept(2L);
+            writer.write("Testing clear...   ");
+            tester.clear(list);
+            final MutableVector theVector = new MutableVector(0, 0);
+            check.accept(1L);
+            writer.write(theVector.toString().substring(0, 0)); // Doing something with theVector not to be optimized away.
         });
     }
 }
