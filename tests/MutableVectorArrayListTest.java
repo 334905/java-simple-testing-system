@@ -325,6 +325,76 @@ public class MutableVectorArrayListTest {
                     expectEqual(correctRes, userRes, "Removing " + vector + " is supposed to return " + correctRes);
                 }
             });
+            writer.write("Testing equals...\n");
+            writer.scope(() -> {
+                writer.write("Testing nulls...\n");
+                writer.scope(() -> {
+                    expectFalse(tester.equals(tester.newList(), null),
+                            "[] is supposed not to be equal to null");
+                    expectFalse(tester.equals(tester.newList(10), null),
+                            "[] (with capacity 10) is supposed not to be equal to null");
+                    {
+                        final Object list = tester.newList();
+                        tester.add(list, new MutableVector(1, 2));
+                        tester.add(list, new MutableVector(3, 4));
+                        tester.add(list, new MutableVector(-7, 0));
+                        expectFalse(tester.equals(list, null),
+                                "[{1, 2}, {3, 4}, {-7, 0}] is supposed not to be equal to null");
+                    }
+                });
+                writer.write("Testing equals of non-lists...\n");
+                writer.scope(() -> {
+                    expectFalse(tester.equals(tester.newList(), new Object()),
+                            "[] is supposed not to be equal to new Object");
+                    expectFalse(tester.equals(tester.newList(10), new ArrayList<MutableVector>(10)),
+                            "[] (with capacity 10) is supposed not to be equal to new java.util.ArrayList(10)");
+                    {
+                        final Object list = tester.newList();
+                        tester.add(list, new MutableVector(0.25, -0.5));
+                        tester.add(list, new MutableVector(3.2, 0.42));
+                        tester.add(list, new MutableVector(-7.1, 0));
+                        expectFalse(
+                                tester.equals(
+                                        list,
+                                        List.of(
+                                                new MutableVector(0.25, -0.5),
+                                                new MutableVector(3.2, 0.42),
+                                                new MutableVector(-7.1, 0)
+                                        )
+                                ),
+                                "[{1, 2}, {3, 4}, {-7, 0}] is supposed not to be equal to List.of(<same vectors>)");
+                    }
+                });
+                writer.write("Testing equals of lists...\n");
+                writer.scope(() -> {
+                    final Object list1 = tester.newList();
+                    tester.add(list1, new MutableVector(0.25, -0.5));
+                    tester.add(list1, new MutableVector(3.2, 0.42));
+                    tester.add(list1, new MutableVector(-7.1, 0));
+                    final Object list2 = tester.newList(1000);
+                    tester.add(list2, new MutableVector(0.25, -0.5));
+                    tester.add(list2, new MutableVector(3.2, 0.42));
+                    tester.add(list2, new MutableVector(-7.1, 0));
+                    final Object list3 = tester.newList(1000);
+                    tester.add(list3, new MutableVector(0.25, -0.5));
+                    tester.add(list3, new MutableVector(3.2, 0.42));
+                    final Object list4 = tester.newList(1000);
+                    tester.add(list4, new MutableVector(-7.1, 0));
+                    tester.add(list4, new MutableVector(0.25, -0.5));
+                    tester.add(list4, new MutableVector(3.2, 0.42));
+
+                    expectTrue(tester.equals(list4, list4),
+                            "List is supposed to be equals to itself");
+                    expectTrue(tester.equals(list2, list2),
+                            "List is supposed to be equals to itself");
+                    expectTrue(tester.equals(list1, list2),
+                            "Two identical lists with the different capacity is supposed to be equals");
+                    expectFalse(tester.equals(list2, list3),
+                            "Two lists with the different size is not supposed to be equals");
+                    expectFalse(tester.equals(list2, list4),
+                            "Two lists with the different elements order is not supposed to be equals");
+                });
+            });
         });
         writer.write("Testing references...\n");
         writer.scope(() -> {
