@@ -1,5 +1,6 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
+import base.expected.Expected;
 import base.function.ThrowingConsumer;
 import mutable_vector_array_list.MutableVector;
 import mutable_vector_array_list.MutableVectorArrayListTester;
@@ -50,6 +51,16 @@ public class MutableVectorArrayListTest {
     private static <T extends Comparable<? super T>> void expectInRange(final T value, final T min, final T upper, final String message) {
         expectLess(value, upper, message);
         expectGreaterOrEqual(value, min, message);
+    }
+
+    private static void expectEqual(final List<MutableVector> correctList, final Object list, final MutableVectorArrayListTester tester) throws IllegalAccessException {
+        expectEqual(correctList.size(), tester.size(list), "Size is supposed to be " + correctList.size());
+        for (int i = 0; i < correctList.size(); i++) {
+            final Expected<MutableVector, Exception> getResult = tester.get(list, i);
+            expectTrue(getResult.hasValue(), "Index " + i + " is supposed to be valid");
+            expectEqual(correctList.get(i), getResult.getValue(),
+                    "Element with index " + i + " is supposed to be " + correctList.get(i));
+        }
     }
 
     private static long supposeMutableVectorsCount()
@@ -292,6 +303,26 @@ public class MutableVectorArrayListTest {
                             "Index of " + vector + " is supposed to be equal to " + correctList.indexOf(vector));
                     expectTrue(tester.contains(userList, vector),
                             "List is supposed to contain " + vector);
+                }
+            });
+            writer.write("Testing remove(MutableVector)...\n");
+            writer.scope(() -> {
+                final int N = 1000;
+                final Object userList = tester.newList(N);
+                final List<MutableVector> correctList = new ArrayList<>(N);
+                final Function<Integer, MutableVector> vectorByIndex = (i) -> new MutableVector(i % 5, ((i + 2) % 5 - 4) * -1);
+
+                for (int i = 0; i < N; i++) {
+                    tester.add(userList, vectorByIndex.apply(i));
+                    correctList.add(vectorByIndex.apply(i));
+                }
+
+                while (correctList.size() != 0) {
+                    final MutableVector vector = vectorByIndex.apply(random.nextInt(5));
+                    final boolean correctRes = correctList.remove(vector);
+                    final boolean userRes = tester.remove(userList, vector);
+                    expectEqual(correctList, userList, tester);
+                    expectEqual(correctRes, userRes, "Removing " + vector + " is supposed to return " + correctRes);
                 }
             });
         });

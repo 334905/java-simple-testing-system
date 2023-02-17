@@ -19,7 +19,7 @@ public class MutableVectorArrayListTester extends ClassTester {
     private final Method isEmpty;
     // private final Method lastIndexOf; REMOVED
     private final Method removeIndexed;
-    // private final Method remove;
+    private final Method remove;
     private final Method set;
     private final Method size;
     // private final Method toArray;
@@ -41,6 +41,7 @@ public class MutableVectorArrayListTester extends ClassTester {
 
         indexOf = getMethod(int.class, "indexOf", MutableVector.class);
         contains = getMethod(boolean.class, "contains", MutableVector.class);
+        remove = getMethod(boolean.class, "remove", MutableVector.class);
 
         clear = getMethod(void.class, "clear");
 
@@ -83,6 +84,10 @@ public class MutableVectorArrayListTester extends ClassTester {
 
     public boolean contains(final Object list, final MutableVector vector) throws IllegalAccessException {
         return super.<Boolean>runMethod(list, contains, vector).getValue();
+    }
+
+    public boolean remove(final Object list, final MutableVector vector) throws IllegalAccessException {
+        return super.<Boolean>runMethod(list, remove, vector).getValue();
     }
 
     public void clear(final Object list) throws IllegalAccessException {
