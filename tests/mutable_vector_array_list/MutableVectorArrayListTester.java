@@ -22,11 +22,11 @@ public class MutableVectorArrayListTester extends ClassTester {
     private final Method remove;
     private final Method set;
     private final Method size;
-    // private final Method toArray;
+    private final Method toArray;
     private final Method trimToSize;
     private final Constructor<?> defaultConstructor;
     private final Constructor<?> constructorOfCapacity;
-    // private final Constructor<?> constructorOfArray;
+    private final Constructor<?> constructorOfArray;
 
     public MutableVectorArrayListTester() throws ClassNotFoundException, NoSuchMethodException {
         super("MutableVectorArrayList");
@@ -50,8 +50,11 @@ public class MutableVectorArrayListTester extends ClassTester {
         ensureCapacity = getMethod(void.class, "ensureCapacity", int.class);
         trimToSize = getMethod(void.class, "trimToSize");
 
+        toArray = getMethod(MutableVector[].class, "toArray");
+
         defaultConstructor = aClass.getConstructor();
         constructorOfCapacity = aClass.getConstructor(int.class);
+        constructorOfArray = aClass.getConstructor(MutableVector[].class);
     }
 
     public boolean add(final Object list, final MutableVector elem) throws IllegalAccessException {
@@ -111,6 +114,10 @@ public class MutableVectorArrayListTester extends ClassTester {
         super.<Void>runMethod(list, trimToSize).getValue();
     }
 
+    public MutableVector[] toArray(final Object list) throws IllegalAccessException {
+        return super.<MutableVector[]>runMethod(list, toArray).getValue();
+    }
+
     public Object newList() throws IllegalAccessException, InstantiationException {
         return super.runConstructor(defaultConstructor).getValue();
     }
@@ -121,5 +128,9 @@ public class MutableVectorArrayListTester extends ClassTester {
 
     public Object newList(final int capacity) throws IllegalAccessException, InstantiationException {
         return expectedNewList(capacity).getValue();
+    }
+
+    public Object newList(final MutableVector[] array) throws IllegalAccessException, InstantiationException {
+        return super.runConstructor(constructorOfArray, (Object) array).getValue();
     }
 }

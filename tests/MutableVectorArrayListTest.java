@@ -476,6 +476,28 @@ public class MutableVectorArrayListTest {
                             "ensureCapacity(0) is supposed not to change list with capacity 10");
                 });
             });
+            writer.write("Testing constructor of array and toArray...\n");
+            writer.scope(() -> {
+                writer.write("Testing empty array...\n");
+                {
+                    final Object list = tester.newList(new MutableVector[0]);
+                    expectTrue(tester.isEmpty(list), "new List(zero-size array) is supposed to be empty");
+                    expectEqual(tester.toArray(list).length, 0,
+                            "emptyList.toArray() is supposed to return empty array");
+                }
+                writer.write("Testing non-empty array...\n");
+                {
+                    final int N = 1000;
+                    final MutableVector[] array = new MutableVector[N];
+                    for (int i = 0; i < N; i++) {
+                        array[i] = new MutableVector(random.nextDouble(-5, 5), random.nextDouble(-5, 5));
+                    }
+                    final Object list = tester.newList(array);
+                    expectEqual(Arrays.asList(array), list, tester);
+                    expectTrue(Arrays.equals(tester.toArray(list), array),
+                            "new List(array).toArray() is supposed to be equal (not identical but equal) to array");
+                }
+            });
         });
         writer.write("Testing invalid arguments...\n");
         writer.scope(() -> {
@@ -576,21 +598,53 @@ public class MutableVectorArrayListTest {
         });
         writer.write("Testing references...\n");
         writer.scope(() -> {
-            final Object list = tester.newList();
-            final MutableVector vector = new MutableVector(1, 2);
-            tester.add(list, vector);
-            vector.setX(1000);
-            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
-                    "List element should not be changed after added object changed.");
-            tester.expectedGet(list, 0).getValue().setY(2000);
-            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
-                    "List element should not be changed after got object changed.");
-            vector.setX(3);
-            vector.setY(4);
-            tester.expectedSet(list, 0, vector);
-            vector.setY(4000);
-            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(3, 4),
-                    "List element should not be changed after set object changed.");
+            writer.write("Testing simple references...\n");
+            {
+                final Object list = tester.newList();
+                final MutableVector vector = new MutableVector(1, 2);
+                tester.add(list, vector);
+                vector.setX(1000);
+                expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
+                        "List element should not be changed after added object changed.");
+                tester.expectedGet(list, 0).getValue().setY(2000);
+                expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
+                        "List element should not be changed after got object changed.");
+                vector.setX(3);
+                vector.setY(4);
+                tester.expectedSet(list, 0, vector);
+                vector.setY(4000);
+                expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(3, 4),
+                        "List element should not be changed after set object changed.");
+            }
+            writer.write("Testing in-array references...\n");
+            {
+                MutableVector[] array = new MutableVector[]{
+                        new MutableVector(1, 2),
+                        new MutableVector(3, 4),
+                        new MutableVector(5, 6),
+                        new MutableVector(7, 8),
+                        new MutableVector(9, 10),
+                        new MutableVector(11, 12),
+                };
+                final List<MutableVector> listUnchanged = Arrays.stream(array).map(MutableVector::new).toList();
+                final Object list = tester.newList(array);
+                array[0] = new MutableVector(0, 0);
+                array[1] = new MutableVector(-1, -1);
+                array[2] = new MutableVector(-2, -2);
+                array[3] = new MutableVector(-3, -3);
+                array[4] = new MutableVector(-4, -4);
+                array[5] = new MutableVector(-5, -5);
+                expectEqual(listUnchanged, list, tester);
+
+                array = tester.toArray(list);
+                array[0] = new MutableVector(0, 0);
+                array[1] = new MutableVector(-1, -1);
+                array[2] = new MutableVector(-2, -2);
+                array[3] = new MutableVector(-3, -3);
+                array[4] = new MutableVector(-4, -4);
+                array[5] = new MutableVector(-5, -5);
+                expectEqual(listUnchanged, list, tester);
+            }
         });
         writer.write("Testing performance...\n");
         writer.scope(() -> {
