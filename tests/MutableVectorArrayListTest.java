@@ -10,9 +10,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class MutableVectorArrayListTest {
     private static void expectTrue(final boolean cond, final String message) {
@@ -56,7 +58,7 @@ public class MutableVectorArrayListTest {
     private static void expectEqual(final List<MutableVector> correctList, final Object list, final MutableVectorArrayListTester tester) throws IllegalAccessException {
         expectEqual(correctList.size(), tester.size(list), "Size is supposed to be " + correctList.size());
         for (int i = 0; i < correctList.size(); i++) {
-            final Expected<MutableVector, Exception> getResult = tester.get(list, i);
+            final Expected<MutableVector, Exception> getResult = tester.expectedGet(list, i);
             expectTrue(getResult.hasValue(), "Index " + i + " is supposed to be valid");
             expectEqual(correctList.get(i), getResult.getValue(),
                     "Element with index " + i + " is supposed to be " + correctList.get(i));
@@ -98,7 +100,7 @@ public class MutableVectorArrayListTest {
         final IndentingWriter writer = new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
         final ExtendedRandom random = new ExtendedRandom();
 
-        writer.write("Testing simple correctness...\n");
+        writer.write("Testing correctness...\n");
         writer.scope(() -> {
             writer.write("Testing empty list...\n");
             writer.scope(() -> {
@@ -112,7 +114,10 @@ public class MutableVectorArrayListTest {
                 final int capacity = 10000;
                 writer.write("Capacity is equal to " + capacity + "\n");
 
-                final Object list = tester.newList(capacity);
+                final Expected<?, Exception> expectedList = tester.expectedNewList(capacity);
+                expectTrue(expectedList.hasValue(),
+                        "new List(" + capacity + ") is supposed not to throw");
+                final Object list = expectedList.getValue();
                 expectEqual(tester.size(list), 0, "Size of empty list is supposed to be 0");
                 expectEqual(tester.capacity(list), capacity, "Capacity of list is supposed to be " + capacity);
                 expectTrue(tester.isEmpty(list), "Empty list is supposed to be empty");
@@ -122,7 +127,7 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList();
 
-                final Function<Integer, MutableVector> addFunk = (v) -> new MutableVector(v, v + 0.5);
+                final IntFunction<MutableVector> addFunk = (v) -> new MutableVector(v, v + 0.5);
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, addFunk.apply(i)),
@@ -138,20 +143,20 @@ public class MutableVectorArrayListTest {
 
                 writer.write("Checking gets...\n");
                 for (int i = 0; i < N; i++) {
-                    expectTrue(tester.get(list, i).hasValue(),
+                    expectTrue(tester.expectedGet(list, i).hasValue(),
                             "Getting element with index " + i + " is not supposed to throw");
-                    expectEqual(tester.get(list, i).getValue(), addFunk.apply(i),
+                    expectEqual(tester.expectedGet(list, i).getValue(), addFunk.apply(i),
                             "Element with index " + i + " is supposed to be equal to " + addFunk.apply(i));
                 }
 
-                final Function<Integer, MutableVector> setFunk = (v) -> new MutableVector(-v, v * -2);
+                final IntFunction<MutableVector> setFunk = (v) -> new MutableVector(-v, v * -2);
                 writer.write("Checking sets...\n");
                 for (int i = 0; i < N; i++) {
-                    expectTrue(tester.set(list, i, setFunk.apply(i)).hasValue(),
+                    expectTrue(tester.expectedSet(list, i, setFunk.apply(i)).hasValue(),
                             "Setting element with index " + i + " is not supposed to throw");
-                    expectTrue(tester.get(list, i).hasValue(),
+                    expectTrue(tester.expectedGet(list, i).hasValue(),
                             "Getting element with index " + i + " is not supposed to throw");
-                    expectEqual(tester.get(list, i).getValue(), setFunk.apply(i),
+                    expectEqual(tester.expectedGet(list, i).getValue(), setFunk.apply(i),
                             "Element with index " + i + " is supposed to be equal to " + setFunk.apply(i));
                 }
             });
@@ -159,9 +164,12 @@ public class MutableVectorArrayListTest {
             writer.scope(() -> {
                 final int N = 1000;
                 writer.write("Initial capacity is equal to " + N + "\n");
-                final Object list = tester.newList(N);
+                final Expected<?, Exception> expectedList = tester.expectedNewList(N);
+                expectTrue(expectedList.hasValue(),
+                        "new List(" + N + ") is supposed not to throw");
+                final Object list = expectedList.getValue();
 
-                final Function<Integer, MutableVector> funk = (v) -> new MutableVector(Math.pow(1.25, v), Double.POSITIVE_INFINITY);
+                final IntFunction<MutableVector> funk = (v) -> new MutableVector(Math.pow(1.25, v), Double.POSITIVE_INFINITY);
 
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)), "add is supposed to return true");
@@ -174,7 +182,7 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList(0);
 
-                final Function<Integer, MutableVector> funk = (v) -> new MutableVector(0.5 * v + 0.25, 0.5 * v);
+                final IntFunction<MutableVector> funk = (v) -> new MutableVector(0.5 * v + 0.25, 0.5 * v);
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)),
@@ -190,11 +198,11 @@ public class MutableVectorArrayListTest {
                             "After deleting " + i + " elements list size is supposed to be " + (N - i));
                     expectFalse(tester.isEmpty(list),
                             "After deleting " + i + " elements list is not supposed to be empty");
-                    expectTrue(tester.get(list, N - i - 1).hasValue(),
+                    expectTrue(tester.expectedGet(list, N - i - 1).hasValue(),
                             "Element with index " + (N - i - 1) + " is supposed to exist before deletion");
-                    expectEqual(tester.get(list, N - i - 1).getValue(), funk.apply(N - i - 1),
+                    expectEqual(tester.expectedGet(list, N - i - 1).getValue(), funk.apply(N - i - 1),
                             "Element with index " + (N - i - 1) + " is supposed to be equal to " + funk.apply(N - i - 1));
-                    final var removeResult = tester.remove(list, N - i - 1);
+                    final var removeResult = tester.expectedRemove(list, N - i - 1);
                     expectTrue(removeResult.hasValue(),
                             "Removing element with index " + (N - i - 1) + " is not supposed to throw");
                     expectEqual(removeResult.getValue(), funk.apply(N - i - 1),
@@ -210,7 +218,7 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList(0);
 
-                final Function<Integer, MutableVector> funk = (v) -> new MutableVector(0.0, 1.1);
+                final IntFunction<MutableVector> funk = (v) -> new MutableVector(0.0, 1.1);
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)),
@@ -226,11 +234,11 @@ public class MutableVectorArrayListTest {
                             "After deleting " + i + " elements list size is supposed to be " + (N - i));
                     expectFalse(tester.isEmpty(list),
                             "After deleting " + i + " elements list is not supposed to be empty");
-                    expectTrue(tester.get(list, 0).hasValue(),
+                    expectTrue(tester.expectedGet(list, 0).hasValue(),
                             "Element with index " + 0 + " is supposed to exist before deletion");
-                    expectEqual(tester.get(list, 0).getValue(), funk.apply(i),
+                    expectEqual(tester.expectedGet(list, 0).getValue(), funk.apply(i),
                             "Element with index " + 0 + " is supposed to be equal to " + funk.apply(i));
-                    final var removeResult = tester.remove(list, 0);
+                    final var removeResult = tester.expectedRemove(list, 0);
                     expectTrue(removeResult.hasValue(),
                             "Removing element with index " + 0 + " is not supposed to throw");
                     expectEqual(removeResult.getValue(), funk.apply(i),
@@ -257,7 +265,7 @@ public class MutableVectorArrayListTest {
                 for (int i = 0; i < N; i++) {
                     int index = random.nextInt(correctList.size());
                     final MutableVector correctRemoved = correctList.remove(index);
-                    final var removeResult = tester.remove(userList, index);
+                    final var removeResult = tester.expectedRemove(userList, index);
                     expectTrue(removeResult.hasValue(),
                             "Removing element with index " + index + " is not supposed to throw");
                     expectEqual(removeResult.getValue(), correctRemoved,
@@ -310,7 +318,7 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object userList = tester.newList(N);
                 final List<MutableVector> correctList = new ArrayList<>(N);
-                final Function<Integer, MutableVector> vectorByIndex = (i) -> new MutableVector(i % 5, ((i + 2) % 5 - 4) * -1);
+                final IntFunction<MutableVector> vectorByIndex = (i) -> new MutableVector(i % 5, ((i + 2) % 5 - 4) * -1);
 
                 for (int i = 0; i < N; i++) {
                     tester.add(userList, vectorByIndex.apply(i));
@@ -395,6 +403,176 @@ public class MutableVectorArrayListTest {
                             "Two lists with the different elements order is not supposed to be equals");
                 });
             });
+            writer.write("Testing ensureCapacity & trimToSize...\n");
+            writer.scope(() -> {
+                writer.write("Testing capacity changing...\n");
+                writer.scope(() -> {
+                    final Expected<?, Exception> expectedList = tester.expectedNewList(0);
+                    expectTrue(expectedList.hasValue(),
+                            "new List(0) is supposed not to throw");
+                    final Object list = expectedList.getValue();
+                    final IntFunction<MutableVector> vectorFunction =
+                            (i) -> new MutableVector((i - 5) * 1.5, -i);
+                    tester.add(list, vectorFunction.apply(0));
+                    tester.add(list, vectorFunction.apply(1));
+                    expectTrue(tester.expectedEnsureCapacity(list, 6).hasValue(),
+                            "ensureCapacity(5) is supposed not to throw");
+                    expectEqual(List.of(vectorFunction.apply(0), vectorFunction.apply(1)), list, tester);
+
+                    final int currentCapacity = tester.capacity(list);
+                    expectGreaterOrEqual(currentCapacity, 6,
+                            "Capacity is supposed to be >= than the ensureCapacity argument");
+
+                    for (int i = 2; i < currentCapacity; i++) {
+                        tester.add(list, vectorFunction.apply(i));
+                        expectEqual(tester.capacity(list), currentCapacity,
+                                "Capacity is supposed not to change after adding elements into big enough list");
+                    }
+                    expectEqual(IntStream.range(0, currentCapacity).mapToObj(vectorFunction).toList(), list, tester);
+                    tester.trimToSize(list);
+                    expectEqual(tester.capacity(list), currentCapacity,
+                            "trimToSize is not supposed to reduce capacity if list's capacity is full");
+                    expectEqual(IntStream.range(0, currentCapacity).mapToObj(vectorFunction).toList(), list, tester);
+
+                    tester.expectedRemove(list, 0).getValue();
+                    tester.trimToSize(list);
+                    expectEqual(tester.capacity(list), currentCapacity - 1,
+                            "Capacity is supposed to reduce after element removed and trimmed to size");
+                    expectEqual(IntStream.range(1, currentCapacity).mapToObj(vectorFunction).toList(), list, tester);
+
+                    tester.expectedRemove(list, currentCapacity - 2).getValue();
+                    tester.expectedRemove(list, currentCapacity - 3).getValue();
+                    tester.expectedRemove(list, currentCapacity - 4).getValue();
+                    tester.expectedRemove(list, currentCapacity - 5).getValue();
+                    tester.trimToSize(list);
+                    expectEqual(tester.capacity(list), currentCapacity - 5,
+                            "Capacity is supposed to reduce after element removed and trimmed to size");
+                    expectEqual(IntStream.range(1, currentCapacity - 4).mapToObj(vectorFunction).toList(), list, tester);
+
+                    tester.clear(list);
+                    tester.trimToSize(list);
+                    expectEqual(tester.capacity(list), 0,
+                            "Capacity is supposed to be zero after cleared and trimmed to size");
+                });
+                writer.write("Testing ensureCapacity less than capacity");
+                writer.scope(() -> {
+                    final Expected<?, Exception> expectedList = tester.expectedNewList(10);
+                    expectTrue(expectedList.hasValue(),
+                            "new List(10) is supposed not to throw");
+                    final Object list = expectedList.getValue();
+                    expectEqual(tester.capacity(list), 10,
+                            "new List(10) is supposed to have capacity 10");
+                    expectTrue(tester.expectedEnsureCapacity(list, 10).hasValue(),
+                            "ensureCapacity(10) is supposed not to throw");
+                    expectEqual(tester.capacity(list), 10,
+                            "ensureCapacity(10) is supposed not to change list with capacity 10");
+                    expectTrue(tester.expectedEnsureCapacity(list, 4).hasValue(),
+                            "ensureCapacity(4) is supposed not to throw");
+                    expectEqual(tester.capacity(list), 10,
+                            "ensureCapacity(4) is supposed not to change list with capacity 10");
+                    expectTrue(tester.expectedEnsureCapacity(list, 0).hasValue(),
+                            "ensureCapacity(0) is supposed not to throw");
+                    expectEqual(tester.capacity(list), 10,
+                            "ensureCapacity(0) is supposed not to change list with capacity 10");
+                });
+            });
+        });
+        writer.write("Testing invalid arguments...\n");
+        writer.scope(() -> {
+            writer.write("Testing too great indices...\n");
+            writer.scope(() -> {
+                writer.write("Testing empty list indices...\n");
+                {
+                    final Object list = tester.newList(100);
+                    expectFalse(tester.expectedGet(list, 1).hasValue(),
+                            "new List(100).get(1) is supposed to throw");
+                    expectFalse(tester.expectedSet(list, 13, new MutableVector(0, 0)).hasValue(),
+                            "new List(100).set(13, ...) is supposed to throw");
+                    expectFalse(tester.expectedRemove(list, 0).hasValue(),
+                            "new List(100).remove(0, ...) is supposed to throw");
+                    expectFalse(tester.expectedGet(list, 1000).hasValue(),
+                            "new List(100).get(1000) is supposed to throw");
+                    expectFalse(tester.expectedSet(list, 100, new MutableVector(0, 0)).hasValue(),
+                            "new List(100).set(100, ...) is supposed to throw");
+                    expectFalse(tester.expectedRemove(list, Integer.MAX_VALUE).hasValue(),
+                            "new List(100).remove(Integer.MAX_VALUE, ...) is supposed to throw");
+                }
+                writer.write("Testing non-empty list indices...\n");
+                {
+                    final Object list = tester.newList(5);
+                    tester.add(list, new MutableVector(-1, -1));
+                    tester.add(list, new MutableVector(0, 0));
+                    tester.add(list, new MutableVector(1, 1));
+                    tester.add(list, new MutableVector(2, 2));
+                    tester.add(list, new MutableVector(3, 3));
+                    expectFalse(tester.expectedGet(list, 5).hasValue(),
+                            "get(5) from list with size 5 is supposed to throw");
+                    expectFalse(tester.expectedSet(list, 5, new MutableVector(0, 0)).hasValue(),
+                            "set(5, ...) from list with size 5 is supposed to throw");
+                    expectFalse(tester.expectedRemove(list, 5).hasValue(),
+                            "remove(5) from list with size 5 is supposed to throw");
+                    expectFalse(tester.expectedGet(list, 100).hasValue(),
+                            "get(100) from list with size 5 is supposed to throw");
+                    expectFalse(tester.expectedSet(list, 101, new MutableVector(0, 0)).hasValue(),
+                            "set(101, ...) from list with size 5 is supposed to throw");
+                    expectFalse(tester.expectedRemove(list, 103).hasValue(),
+                            "remove(103) from list with size 5 is supposed to throw");
+                }
+                writer.write("Printing summary...\n");
+                writer.scope(() -> {
+                    writer.write("Setting 0 of size 0: "
+                            + tester.expectedSet(tester.newList(), 0, new MutableVector(0, 0)).getError() + "\n");
+                    writer.write("Getting 100 of size 0: " + tester.expectedGet(tester.newList(), 100).getError() + "\n");
+                    final Object list = tester.newList();
+                    tester.add(list, new MutableVector(1, 2));
+                    tester.add(list, new MutableVector(3, 4));
+                    tester.add(list, new MutableVector(5, 6));
+                    tester.add(list, new MutableVector(7, 8));
+                    writer.write("Removing 4 of size 4: " + tester.expectedRemove(list, 4).getError() + "\n");
+                });
+            });
+            writer.write("Testing negative indices...\n");
+            writer.scope(() -> {
+                final Object list = tester.newList(100);
+                tester.add(list, new MutableVector(-1, -1));
+                tester.add(list, new MutableVector(0, 0));
+                tester.add(list, new MutableVector(1, 1));
+                tester.add(list, new MutableVector(2, 2));
+                tester.add(list, new MutableVector(3, 3));
+                tester.add(list, new MutableVector(4, 4));
+
+                expectFalse(tester.expectedGet(list, -1).hasValue(),
+                        "get(-1) is supposed to throw");
+                expectFalse(tester.expectedSet(list, -2, new MutableVector(0, 0)).hasValue(),
+                        "set(-2, ...) is supposed to throw");
+                expectFalse(tester.expectedRemove(list, -10).hasValue(),
+                        "remove(-10, ...) is supposed to throw");
+
+                writer.write("Getting -1 of size 6: " + tester.expectedGet(list, -1).getError() + "\n");
+                writer.write("Setting -2 of size 6: "
+                        + tester.expectedSet(list, -2, new MutableVector(0, 0)).getError() + "\n");
+                writer.write("Removing -1 of size 6: " + tester.expectedRemove(list, -10).getError() + "\n");
+            });
+            writer.write("Testing negative capacity...\n");
+            writer.scope(() -> {
+                expectFalse(tester.expectedNewList(-1).hasValue(),
+                        "new List(-1) is supposed to throw");
+                writer.write("new List(-1): " + tester.expectedNewList(-1).getError() + "\n");
+                expectFalse(tester.expectedNewList(Integer.MIN_VALUE).hasValue(),
+                        "new List(Integer.MIN_VALUE) is supposed to throw");
+                writer.write("new List(Integer.MIN_VALUE): "
+                        + tester.expectedNewList(Integer.MIN_VALUE).getError() + "\n");
+
+                final Object list = tester.newList();
+                expectFalse(tester.expectedEnsureCapacity(list, -1).hasValue(),
+                        "ensureCapacity(-1) is supposed to throw");
+                writer.write("ensureCapacity(-1): "
+                        + tester.expectedEnsureCapacity(list, -1).getError() + "\n");
+                expectFalse(tester.expectedEnsureCapacity(list, Integer.MIN_VALUE).hasValue(),
+                        "ensureCapacity(Integer.MIN_VALUE) is supposed to throw");
+                writer.write("ensureCapacity(Integer.MIN_VALUE): "
+                        + tester.expectedEnsureCapacity(list, Integer.MIN_VALUE).getError() + "\n");
+            });
         });
         writer.write("Testing references...\n");
         writer.scope(() -> {
@@ -402,16 +580,16 @@ public class MutableVectorArrayListTest {
             final MutableVector vector = new MutableVector(1, 2);
             tester.add(list, vector);
             vector.setX(1000);
-            expectEqual(tester.get(list, 0).getValue(), new MutableVector(1, 2),
+            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
                     "List element should not be changed after added object changed.");
-            tester.get(list, 0).getValue().setY(2000);
-            expectEqual(tester.get(list, 0).getValue(), new MutableVector(1, 2),
+            tester.expectedGet(list, 0).getValue().setY(2000);
+            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(1, 2),
                     "List element should not be changed after got object changed.");
             vector.setX(3);
             vector.setY(4);
-            tester.set(list, 0, vector);
+            tester.expectedSet(list, 0, vector);
             vector.setY(4000);
-            expectEqual(tester.get(list, 0).getValue(), new MutableVector(3, 4),
+            expectEqual(tester.expectedGet(list, 0).getValue(), new MutableVector(3, 4),
                     "List element should not be changed after set object changed.");
         });
         writer.write("Testing performance...\n");
@@ -427,7 +605,7 @@ public class MutableVectorArrayListTest {
             writer.write("Removing " + N + " elements from the end...\n");
             long removeStart = System.currentTimeMillis();
             for (int i = 0; i < N; i++) {
-                tester.remove(list, N - i - 1);
+                tester.expectedRemove(list, N - i - 1);
             }
             writer.write((System.currentTimeMillis() - removeStart) / 1000.0 + " seconds elapsed\n");
         });
@@ -450,10 +628,10 @@ public class MutableVectorArrayListTest {
             tester.add(list, new MutableVector(3, 4));
             tester.add(list, new MutableVector(-2, -0.5));
             tester.add(list, new MutableVector(5, 5));
-            tester.remove(list, 1);
+            tester.expectedRemove(list, 1);
             check.accept(3L);
             writer.write("Testing removing from the end...   ");
-            tester.remove(list, 2);
+            tester.expectedRemove(list, 2);
             check.accept(2L);
             writer.write("Testing clear...   ");
             tester.clear(list);

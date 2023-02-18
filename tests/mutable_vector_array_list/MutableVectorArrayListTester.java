@@ -12,7 +12,7 @@ public class MutableVectorArrayListTester extends ClassTester {
     private final Method capacity;
     private final Method clear;
     private final Method contains;
-    // private final Method ensureCapacity;
+    private final Method ensureCapacity;
     private final Method equals;
     private final Method get;
     private final Method indexOf;
@@ -23,7 +23,7 @@ public class MutableVectorArrayListTester extends ClassTester {
     private final Method set;
     private final Method size;
     // private final Method toArray;
-    // private final Method trimToSize;
+    private final Method trimToSize;
     private final Constructor<?> defaultConstructor;
     private final Constructor<?> constructorOfCapacity;
     // private final Constructor<?> constructorOfArray;
@@ -47,6 +47,9 @@ public class MutableVectorArrayListTester extends ClassTester {
 
         equals = getMethod(boolean.class, "equals", Object.class);
 
+        ensureCapacity = getMethod(void.class, "ensureCapacity", int.class);
+        trimToSize = getMethod(void.class, "trimToSize");
+
         defaultConstructor = aClass.getConstructor();
         constructorOfCapacity = aClass.getConstructor(int.class);
     }
@@ -59,7 +62,7 @@ public class MutableVectorArrayListTester extends ClassTester {
         return super.<Integer>runMethod(list, capacity).getValue();
     }
 
-    public Expected<MutableVector, Exception> get(final Object list, final int index) throws IllegalAccessException {
+    public Expected<MutableVector, Exception> expectedGet(final Object list, final int index) throws IllegalAccessException {
         return super.runMethod(list, get, index);
     }
 
@@ -67,11 +70,11 @@ public class MutableVectorArrayListTester extends ClassTester {
         return super.<Boolean>runMethod(list, isEmpty).getValue();
     }
 
-    public Expected<MutableVector, Exception> remove(final Object list, final int index) throws IllegalAccessException {
+    public Expected<MutableVector, Exception> expectedRemove(final Object list, final int index) throws IllegalAccessException {
         return super.runMethod(list, removeIndexed, index);
     }
 
-    public Expected<Void, Exception> set(final Object list, final int index, final MutableVector elem)
+    public Expected<Void, Exception> expectedSet(final Object list, final int index, final MutableVector elem)
             throws IllegalAccessException {
         return super.runMethod(list, set, index, elem);
     }
@@ -100,11 +103,23 @@ public class MutableVectorArrayListTester extends ClassTester {
         return super.<Boolean>runMethod(list, equals, other).getValue();
     }
 
+    public Expected<Void, Exception> expectedEnsureCapacity(final Object list, final int newCapacity) throws IllegalAccessException {
+        return super.<Void>runMethod(list, ensureCapacity, newCapacity);
+    }
+
+    public void trimToSize(final Object list) throws IllegalAccessException {
+        super.<Void>runMethod(list, trimToSize).getValue();
+    }
+
     public Object newList() throws IllegalAccessException, InstantiationException {
         return super.runConstructor(defaultConstructor).getValue();
     }
 
+    public Expected<?, Exception> expectedNewList(final int capacity) throws IllegalAccessException, InstantiationException {
+        return super.runConstructor(constructorOfCapacity, capacity);
+    }
+
     public Object newList(final int capacity) throws IllegalAccessException, InstantiationException {
-        return super.runConstructor(constructorOfCapacity, capacity).getValue();
+        return expectedNewList(capacity).getValue();
     }
 }
