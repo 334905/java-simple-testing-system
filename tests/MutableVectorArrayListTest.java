@@ -454,7 +454,7 @@ public class MutableVectorArrayListTest {
                     expectEqual(tester.capacity(list), 0,
                             "Capacity is supposed to be zero after cleared and trimmed to size");
                 });
-                writer.write("Testing ensureCapacity less than capacity");
+                writer.write("Testing ensureCapacity less than capacity...\n");
                 writer.scope(() -> {
                     final Expected<?, Exception> expectedList = tester.expectedNewList(10);
                     expectTrue(expectedList.hasValue(),
