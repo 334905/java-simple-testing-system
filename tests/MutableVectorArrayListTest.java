@@ -645,6 +645,35 @@ public class MutableVectorArrayListTest {
                 array[5] = new MutableVector(-5, -5);
                 expectEqual(listUnchanged, list, tester);
             }
+            writer.write("Testing in-array elements...\n");
+            {
+                MutableVector[] array = new MutableVector[]{
+                        new MutableVector(1, 2),
+                        new MutableVector(3, 4),
+                        new MutableVector(5, 6),
+                        new MutableVector(7, 8),
+                        new MutableVector(9, 10),
+                        new MutableVector(11, 12),
+                };
+                final List<MutableVector> listUnchanged = Arrays.stream(array).map(MutableVector::new).toList();
+                final Object list = tester.newList(array);
+                array[0].setX(0);
+                array[1].setX(-1);
+                array[2].setX(-2);
+                array[3].setX(-3);
+                array[4].setX(-4);
+                array[5].setX(-5);
+                expectEqual(listUnchanged, list, tester);
+
+                array = tester.toArray(list);
+                array[0].setX(0);
+                array[1].setX(-1);
+                array[2].setX(-2);
+                array[3].setX(-3);
+                array[4].setX(-4);
+                array[5].setX(-5);
+                expectEqual(listUnchanged, list, tester);
+            }
         });
         writer.write("Testing performance...\n");
         writer.scope(() -> {
