@@ -1,6 +1,7 @@
 package base.expected;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface Expected<T, E extends Exception> {
     boolean hasValue();
@@ -22,6 +23,14 @@ public interface Expected<T, E extends Exception> {
             return getValue();
         } else {
             throw error;
+        }
+    }
+
+    default <E1 extends Error> T getValueOrApplyThrow(final Function<E, E1> errorFunction) throws E1 {
+        if (hasValue()) {
+            return getValue();
+        } else {
+            throw errorFunction.apply(getError());
         }
     }
 
