@@ -1,5 +1,10 @@
 import java.util.Objects;
 
+import markup.Emphasis;
+import markup.Strong;
+import markup.Text;
+import markup.Paragraph;
+
 public class MarkdownTest {
     public static void expectEquals(final String actual, final String expected) {
         if (!Objects.equals(actual, expected)) {
@@ -9,39 +14,43 @@ public class MarkdownTest {
 
     private static int test = 0;
 
-    private static void printTest(final Object obj) {
+    protected static void printTest(final Object obj) {
         System.out.println("Test #" + ++test + ": " + obj);
     }
 
-    private static void expectMarkdownEquals(final Text markdownable, final String expected) {
-        printTest(markdownable);
+    protected static void resetTestCounter() {
+        test = 0;
+    }
+
+    private static void expectMarkdownEquals(final Text markdownMarkup, final String expected) {
+        printTest(markdownMarkup);
         final StringBuilder sb = new StringBuilder();
-        markdownable.toMarkdown(sb);
+        markdownMarkup.toMarkdown(sb);
         expectEquals(sb.toString(), expected);
     }
 
-    private static void expectMarkdownEquals(final Emphasis markdownable, final String expected) {
-        printTest(markdownable);
+    private static void expectMarkdownEquals(final Emphasis markdownMarkup, final String expected) {
+        printTest(markdownMarkup);
         final StringBuilder sb = new StringBuilder();
-        markdownable.toMarkdown(sb);
+        markdownMarkup.toMarkdown(sb);
         expectEquals(sb.toString(), expected);
     }
 
-    private static void expectMarkdownEquals(final Strong markdownable, final String expected) {
-        printTest(markdownable);
+    private static void expectMarkdownEquals(final Strong markdownMarkup, final String expected) {
+        printTest(markdownMarkup);
         final StringBuilder sb = new StringBuilder();
-        markdownable.toMarkdown(sb);
+        markdownMarkup.toMarkdown(sb);
         expectEquals(sb.toString(), expected);
     }
 
-    private static void expectMarkdownEquals(final Paragraph markdownable, final String expected) {
-        printTest(markdownable);
+    private static void expectMarkdownEquals(final Paragraph markdownMarkup, final String expected) {
+        printTest(markdownMarkup);
         final StringBuilder sb = new StringBuilder();
-        markdownable.toMarkdown(sb);
+        markdownMarkup.toMarkdown(sb);
         expectEquals(sb.toString(), expected);
     }
 
-    public static void main(String[] args) {
+    public static void main(final String... args) {
         expectMarkdownEquals(new Text("Hello, world"), "Hello, world");
         expectMarkdownEquals(new Emphasis(new Text("Hell"), new Text("o, world")), "*Hello, world*");
         expectMarkdownEquals(new Strong(new Text("Hello"), new Text(","), new Text(" world")), "__Hello, world__");
