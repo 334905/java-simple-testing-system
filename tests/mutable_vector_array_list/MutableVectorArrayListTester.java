@@ -107,7 +107,7 @@ public class MutableVectorArrayListTester extends ClassTester {
     }
 
     public Expected<Void, Exception> expectedEnsureCapacity(final Object list, final int newCapacity) throws IllegalAccessException {
-        return super.<Void>runMethod(list, ensureCapacity, newCapacity);
+        return super.runMethod(list, ensureCapacity, newCapacity);
     }
 
     public void trimToSize(final Object list) throws IllegalAccessException {
@@ -118,8 +118,12 @@ public class MutableVectorArrayListTester extends ClassTester {
         return super.<MutableVector[]>runMethod(list, toArray).getValue();
     }
 
+    public Expected<?, Exception> expectedNewList() throws IllegalAccessException, InstantiationException {
+        return super.runConstructor(defaultConstructor);
+    }
+
     public Object newList() throws IllegalAccessException, InstantiationException {
-        return super.runConstructor(defaultConstructor).getValue();
+        return expectedNewList().getValue();
     }
 
     public Expected<?, Exception> expectedNewList(final int capacity) throws IllegalAccessException, InstantiationException {

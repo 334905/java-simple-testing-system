@@ -5,11 +5,8 @@ import base.function.ThrowingConsumer;
 import mutable_vector_array_list.MutableVector;
 import mutable_vector_array_list.MutableVectorArrayListTester;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -79,10 +76,10 @@ public class MutableVectorArrayListTest {
         System.gc();
         record ClassInfo(long instances, String className) {
         }
-        final Pattern jmapRegex = Pattern.compile("^\\s++\\d++[^\\d]++(\\d++)[^\\d]++\\d++\\s++([^\\s]++)");
+        final Pattern jmapRegex = Pattern.compile("^\\s++\\d++\\D++(\\d++)\\D++\\d++\\s++(\\S++)");
         final Process jmapProc = Runtime.getRuntime().exec("jmap -histo " + ProcessHandle.current().pid());
-        try {
-            return jmapProc.inputReader().lines()
+        try (final BufferedReader reader = jmapProc.inputReader()) {
+            return reader.lines()
                     .map(s -> {
                         final Matcher match = jmapRegex.matcher(s);
                         if (match.matches()) {
@@ -100,11 +97,10 @@ public class MutableVectorArrayListTest {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        final MutableVectorArrayListTester tester = new MutableVectorArrayListTester();
-        final IndentingWriter writer = new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-        final ExtendedRandom random = new ExtendedRandom();
-
+    protected static void main(final MutableVectorArrayListTester tester,
+                               final IndentingWriter writer,
+                               final ExtendedRandom random,
+                               final boolean nulls) throws Exception {
         writer.write("Testing correctness...\n");
         writer.scope(() -> {
             writer.write("Testing empty list...\n");
@@ -130,7 +126,12 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList();
 
-                final IntFunction<MutableVector> addFunk = (v) -> new MutableVector(v, v + 0.5);
+                final IntFunction<MutableVector> addFunk;
+                if (nulls) {
+                    addFunk = v -> v % 4 == 1 ? null : new MutableVector(v, v + 0.5);
+                } else {
+                    addFunk = v -> new MutableVector(v, v + 0.5);
+                }
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, addFunk.apply(i)),
@@ -153,7 +154,13 @@ public class MutableVectorArrayListTest {
                     );
                 }
 
-                final IntFunction<MutableVector> setFunk = (v) -> new MutableVector(-v, v * -2);
+                final IntFunction<MutableVector> setFunk;
+                if (nulls) {
+                    final List<Boolean> isNull = random.ints(N, 0, 3).mapToObj(i -> i % 3 != 0).toList();
+                    setFunk = (v) -> isNull.get(v) ? null : new MutableVector(-v, v * -2);
+                } else {
+                    setFunk = (v) -> new MutableVector(-v, v * -2);
+                }
                 writer.write("Checking sets...\n");
                 for (int i = 0; i < N; i++) {
                     expectGet(tester.expectedSet(list, i, setFunk.apply(i)), "Setting element with index " + i + " is not supposed to throw");
@@ -171,7 +178,12 @@ public class MutableVectorArrayListTest {
                 final Expected<?, Exception> expectedList = tester.expectedNewList(N);
                 final Object list = expectGet(expectedList, "new List(" + N + ") is supposed not to throw");
 
-                final IntFunction<MutableVector> funk = (v) -> new MutableVector(Math.pow(1.25, v), Double.POSITIVE_INFINITY);
+                final IntFunction<MutableVector> funk;
+                if (nulls) {
+                    funk = v -> null;
+                } else {
+                    funk = v -> new MutableVector(Math.pow(1.25, v), Double.POSITIVE_INFINITY);
+                }
 
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)), "add is supposed to return true");
@@ -184,7 +196,14 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList(0);
 
-                final IntFunction<MutableVector> funk = (v) -> new MutableVector(0.5 * v + 0.25, 0.5 * v);
+                final IntFunction<MutableVector> funk;
+                if (nulls) {
+                    final List<Boolean> isNull = random.ints(N, 0, 2).mapToObj(i -> i == 1).toList();
+                    funk = v -> isNull.get(v) ? null : new MutableVector(0.5 * v + 0.25, 0.5 * v);
+                } else {
+                    funk = v -> new MutableVector(0.5 * v + 0.25, 0.5 * v);
+                }
+
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)),
@@ -227,7 +246,13 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object list = tester.newList(0);
 
-                final IntFunction<MutableVector> funk = (v) -> new MutableVector(0.0, 1.1);
+                final IntFunction<MutableVector> funk;
+                if (nulls) {
+                    final List<Boolean> isNull = random.ints(N, 0, 10).mapToObj(i -> i % 3 != 0).toList();
+                    funk = v -> isNull.get(v) ? null : new MutableVector(0.0, 1.1);
+                } else {
+                    funk = v -> new MutableVector(0.0, 1.1);
+                }
                 writer.write("Adding " + N + " elements...\n");
                 for (int i = 0; i < N; i++) {
                     expectTrue(tester.add(list, funk.apply(i)),
@@ -270,7 +295,13 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final List<MutableVector> correctList = new ArrayList<>(N);
                 final Object userList = tester.newList(N);
-                final Supplier<MutableVector> randomVector = () -> new MutableVector(random.nextDouble(), random.nextDouble());
+                final Supplier<MutableVector> randomVector;
+                if (nulls) {
+                    randomVector =
+                            () -> random.nextInt(5) != 3 ? null : new MutableVector(random.nextDouble(), random.nextDouble());
+                } else {
+                    randomVector = () -> new MutableVector(random.nextDouble(), random.nextDouble());
+                }
 
                 for (int i = 0; i < N; i++) {
                     final MutableVector vector = randomVector.get();
@@ -295,7 +326,13 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final List<MutableVector> correctList = new ArrayList<>(N);
                 final Object userList = tester.newList(N);
-                final Supplier<MutableVector> randomVector = () -> new MutableVector(random.nextDouble(), random.nextDouble());
+                final Supplier<MutableVector> randomVector;
+                if (nulls) {
+                    randomVector =
+                            () -> random.nextInt(100) == 56 ? null : new MutableVector(random.nextDouble(), random.nextDouble());
+                } else {
+                    randomVector = () -> new MutableVector(random.nextDouble(), random.nextDouble());
+                }
 
                 {
                     final MutableVector vector = randomVector.get();
@@ -336,7 +373,12 @@ public class MutableVectorArrayListTest {
                 final int N = 1000;
                 final Object userList = tester.newList(N);
                 final List<MutableVector> correctList = new ArrayList<>(N);
-                final IntFunction<MutableVector> vectorByIndex = (i) -> new MutableVector(i % 5, ((i + 2) % 5 - 4) * -1);
+                final IntFunction<MutableVector> vectorByIndex;
+                if (nulls) {
+                    vectorByIndex = i -> i % 6 == 5 ? null : new MutableVector(i % 6, ((i + 2) % 6 - 4) * -1);
+                } else {
+                    vectorByIndex = i -> new MutableVector(i % 5, ((i + 2) % 5 - 4) * -1);
+                }
 
                 for (int i = 0; i < N; i++) {
                     tester.add(userList, vectorByIndex.apply(i));
@@ -344,7 +386,7 @@ public class MutableVectorArrayListTest {
                 }
 
                 while (correctList.size() != 0) {
-                    final MutableVector vector = vectorByIndex.apply(random.nextInt(5));
+                    final MutableVector vector = vectorByIndex.apply(random.nextInt(nulls ? 6 : 5));
                     final boolean correctRes = correctList.remove(vector);
                     final boolean userRes = tester.remove(userList, vector);
                     expectEqual(correctList, userList, tester);
@@ -389,24 +431,49 @@ public class MutableVectorArrayListTest {
                                         )
                                 ),
                                 "[{1, 2}, {3, 4}, {-7, 0}] is supposed not to be equal to List.of(<same vectors>)");
+                        expectFalse(
+                                tester.equals(
+                                        list,
+                                        new MutableVector[]{
+                                                new MutableVector(0.25, -0.5),
+                                                new MutableVector(3.2, 0.42),
+                                                new MutableVector(-7.1, 0)
+                                        }
+                                ),
+                                "[{1, 2}, {3, 4}, {-7, 0}] is supposed not to be equal to new MutableVector[]{<same vectors>}");
                     }
                 });
                 writer.write("Testing equals of lists...\n");
                 writer.scope(() -> {
                     final Object list1 = tester.newList();
+                    if (nulls) {
+                        tester.add(list1, null);
+                    }
                     tester.add(list1, new MutableVector(0.25, -0.5));
                     tester.add(list1, new MutableVector(3.2, 0.42));
-                    tester.add(list1, new MutableVector(-7.1, 0));
+                    tester.add(list1, nulls ? null : new MutableVector(-7.1, 0));
+
                     final Object list2 = tester.newList(1000);
+                    if (nulls) {
+                        tester.add(list2, null);
+                    }
                     tester.add(list2, new MutableVector(0.25, -0.5));
                     tester.add(list2, new MutableVector(3.2, 0.42));
-                    tester.add(list2, new MutableVector(-7.1, 0));
+                    tester.add(list2, nulls ? null : new MutableVector(-7.1, 0));
+
                     final Object list3 = tester.newList(1000);
+                    if (nulls) {
+                        tester.add(list3, null);
+                    }
                     tester.add(list3, new MutableVector(0.25, -0.5));
                     tester.add(list3, new MutableVector(3.2, 0.42));
+
                     final Object list4 = tester.newList(1000);
-                    tester.add(list4, new MutableVector(-7.1, 0));
+                    tester.add(list4, nulls ? null : new MutableVector(-7.1, 0));
                     tester.add(list4, new MutableVector(0.25, -0.5));
+                    if (nulls) {
+                        tester.add(list4, null);
+                    }
                     tester.add(list4, new MutableVector(3.2, 0.42));
 
                     expectTrue(tester.equals(list4, list4),
@@ -429,13 +496,17 @@ public class MutableVectorArrayListTest {
                     expectTrue(expectedList.hasValue(),
                             "new List(0) is supposed not to throw");
                     final Object list = expectedList.getValue();
-                    final IntFunction<MutableVector> vectorFunction =
-                            (i) -> new MutableVector((i - 5) * 1.5, -i);
+                    final IntFunction<MutableVector> vectorFunction;
+                    if (nulls) {
+                        vectorFunction = i -> i % 2 == 1 ? null : new MutableVector((i - 5) * 1.5, -i);
+                    } else {
+                        vectorFunction = i -> new MutableVector((i - 5) * 1.5, -i);
+                    }
                     tester.add(list, vectorFunction.apply(0));
                     tester.add(list, vectorFunction.apply(1));
                     expectTrue(tester.expectedEnsureCapacity(list, 6).hasValue(),
                             "ensureCapacity(5) is supposed not to throw");
-                    expectEqual(List.of(vectorFunction.apply(0), vectorFunction.apply(1)), list, tester);
+                    expectEqual(Arrays.asList(vectorFunction.apply(0), vectorFunction.apply(1)), list, tester);
 
                     final int currentCapacity = tester.capacity(list);
                     expectGreaterOrEqual(currentCapacity, 6,
@@ -505,7 +576,11 @@ public class MutableVectorArrayListTest {
                     final int N = 1000;
                     final MutableVector[] array = new MutableVector[N];
                     for (int i = 0; i < N; i++) {
-                        array[i] = new MutableVector(random.nextDouble(-5, 5), random.nextDouble(-5, 5));
+                        if (nulls && random.nextBoolean()) {
+                            array[i] = null;
+                        } else {
+                            array[i] = new MutableVector(random.nextDouble(-5, 5), random.nextDouble(-5, 5));
+                        }
                     }
                     final Object list = tester.newList(array);
                     expectEqual(Arrays.asList(array), list, tester);
@@ -529,7 +604,7 @@ public class MutableVectorArrayListTest {
                             "new List(100).remove(0, ...) is supposed to throw");
                     expectFalse(tester.expectedGet(list, 1000).hasValue(),
                             "new List(100).get(1000) is supposed to throw");
-                    expectFalse(tester.expectedSet(list, 100, new MutableVector(0, 0)).hasValue(),
+                    expectFalse(tester.expectedSet(list, 100, nulls ? null : new MutableVector(0, 0)).hasValue(),
                             "new List(100).set(100, ...) is supposed to throw");
                     expectFalse(tester.expectedRemove(list, Integer.MAX_VALUE).hasValue(),
                             "new List(100).remove(Integer.MAX_VALUE, ...) is supposed to throw");
@@ -537,10 +612,10 @@ public class MutableVectorArrayListTest {
                 writer.write("Testing non-empty list indices...\n");
                 {
                     final Object list = tester.newList(5);
-                    tester.add(list, new MutableVector(-1, -1));
+                    tester.add(list, nulls ? null : new MutableVector(-1, -1));
                     tester.add(list, new MutableVector(0, 0));
                     tester.add(list, new MutableVector(1, 1));
-                    tester.add(list, new MutableVector(2, 2));
+                    tester.add(list, nulls ? null : new MutableVector(2, 2));
                     tester.add(list, new MutableVector(3, 3));
                     expectFalse(tester.expectedGet(list, 5).hasValue(),
                             "get(5) from list with size 5 is supposed to throw");
@@ -572,22 +647,22 @@ public class MutableVectorArrayListTest {
             writer.scope(() -> {
                 final Object list = tester.newList(100);
                 tester.add(list, new MutableVector(-1, -1));
-                tester.add(list, new MutableVector(0, 0));
+                tester.add(list, nulls ? null : new MutableVector(0, 0));
                 tester.add(list, new MutableVector(1, 1));
                 tester.add(list, new MutableVector(2, 2));
                 tester.add(list, new MutableVector(3, 3));
-                tester.add(list, new MutableVector(4, 4));
+                tester.add(list, nulls ? null : new MutableVector(4, 4));
 
                 expectFalse(tester.expectedGet(list, -1).hasValue(),
                         "get(-1) is supposed to throw");
-                expectFalse(tester.expectedSet(list, -2, new MutableVector(0, 0)).hasValue(),
+                expectFalse(tester.expectedSet(list, -2, nulls ? null : new MutableVector(0, 0)).hasValue(),
                         "set(-2, ...) is supposed to throw");
                 expectFalse(tester.expectedRemove(list, -10).hasValue(),
                         "remove(-10, ...) is supposed to throw");
 
                 writer.write("Getting -1 of size 6: " + tester.expectedGet(list, -1).getError() + "\n");
                 writer.write("Setting -2 of size 6: "
-                        + tester.expectedSet(list, -2, new MutableVector(0, 0)).getError() + "\n");
+                        + tester.expectedSet(list, -2, nulls ? null : new MutableVector(0, 0)).getError() + "\n");
                 writer.write("Removing -1 of size 6: " + tester.expectedRemove(list, -10).getError() + "\n");
             });
             writer.write("Testing negative capacity...\n");
@@ -737,5 +812,14 @@ public class MutableVectorArrayListTest {
             check.accept(1L);
             writer.write(theVector.toString().substring(0, 0)); // Doing something with theVector not to be optimized away.
         });
+    }
+
+    public static void main(String[] args) throws Exception {
+        main(
+                new MutableVectorArrayListTester(),
+                new IndentingWriter(new BufferedWriter(new OutputStreamWriter(System.out))),
+                new ExtendedRandom(),
+                false
+        );
     }
 }
