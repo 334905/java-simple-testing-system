@@ -1,8 +1,8 @@
+import reverse.testers.AbstractReverseTester;
 import reverse.testers.ReverseEvenTester;
 
 public class ReverseEvenTest extends reverse.BaseTest {
-    public static void main(final String[] args) throws Exception {
-        final ReverseEvenTester tester = new ReverseEvenTester(random);
+    protected static void testAll(final AbstractReverseTester tester) throws Exception {
         writer.write("Testing statement* tests...\n");
         writer.scope(() -> {
             test(tester, new int[][]{
@@ -14,9 +14,9 @@ public class ReverseEvenTest extends reverse.BaseTest {
                     {4, 3, 2, 1}
             });
             test(tester, new int[][]{
-                    {-2, 1, 10},
+                    {-2, 1, -11, 10},
                     {},
-                    {2, -5, -3, 4, 8}
+                    {2, -5, -3, 4, 8, 9}
             });
             test(tester, new int[][]{
                     {1, 2},
@@ -35,9 +35,20 @@ public class ReverseEvenTest extends reverse.BaseTest {
                     {}
             });
             test(tester, new int[][]{
+                    {1, 3, 5},
+                    {7, 9},
+                    {11}
+            });
+            test(tester, new int[][]{
                     {2, 4, 6},
                     {8, 10},
                     {12}
+            });
+            test(tester, new int[][]{
+                    {1, 3, 5},
+                    {7, 9, 124, -5},
+                    {},
+                    {17}
             });
             test(tester, new int[][]{
                     {2, 4, 6},
@@ -53,7 +64,7 @@ public class ReverseEvenTest extends reverse.BaseTest {
             });
             test(tester, new int[][]{
                     {0},
-                    {2, 8},
+                    {2, 8, 7},
                     {},
                     {1},
                     {},
@@ -107,5 +118,9 @@ public class ReverseEvenTest extends reverse.BaseTest {
                 randomTest(tester, 100000, 100000, Integer.MIN_VALUE, Integer.MAX_VALUE);
             });
         });
+    }
+
+    public static void main(final String[] args) throws Exception {
+        testAll(new ReverseEvenTester(random));
     }
 }
