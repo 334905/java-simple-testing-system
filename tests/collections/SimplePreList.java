@@ -6,7 +6,7 @@ import java.util.Iterator;
  * Простой пред-список. Содержит некое подмножество методов {@link java.util.List}, чтобы было проще реализовывать.
  * Хранит объекты типа {@link TestClass} для простоты тестирования.
  */
-public interface SimplePreList {
+public interface SimplePreList extends Iterable<TestClass> {
     /**
      * Добавляет в конец списка указанный элемент.
      * @param element Элемент, который надо добавить.
@@ -81,9 +81,10 @@ public interface SimplePreList {
      * Присваивает элементу по заданному индексу заданное значение.
      * @param index Индекс, элемент по которому должен быть изменён.
      * @param element Новое значение элемента списка.
+     * @return Значение, которое раньше лежало по указанному индексу.
      * @throws IndexOutOfBoundsException Если индекс меньше нуля или больше либо равен {@link #size()}.
      */
-    void set(int index, TestClass element);
+    TestClass set(int index, TestClass element);
 
     /**
      * Возвращает количество элементов в списке.
