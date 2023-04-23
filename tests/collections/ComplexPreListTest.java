@@ -4,6 +4,7 @@ import base.Asserts;
 import base.pairs.Pair;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 public class ComplexPreListTest extends SimplePreListTest {
@@ -47,6 +48,64 @@ public class ComplexPreListTest extends SimplePreListTest {
                 initial.set(mod.first(), mod.second());
                 writer.write("set(" + mod.first() + ", " + mod.second() + ")\n");
             }
+        });
+    }
+
+    protected static void doListIteratorAdd(final ComplexPreList list, final List<TestClass> initial, final Collection<Pair<Integer, TestClass>> insertions) throws IOException {
+        writer.write("Testing adding to " + list + " using listIterator\n");
+        int index = 0;
+        final ListIterator<TestClass> iter = list.listIterator();
+        for (final Pair<Integer, TestClass> mod : insertions) {
+            if (index < mod.first()) {
+                while (index < mod.first()) {
+                    index++;
+                    iter.next();
+                }
+            } else {
+                while (index > mod.first()) {
+                    index--;
+                    iter.previous();
+                }
+            }
+            initial.add(mod.first(), mod.second());
+            iter.add(mod.second());
+            index++;
+            writer.write("add(" + mod.first() + ", " + mod.second() + ")\n");
+        }
+    }
+
+    protected static void checkListIteratorRemove(final ComplexPreList list, final List<TestClass> initial, final Collection<Integer> indices) throws IOException {
+        writer.write("Removing indices " + indices + " out of " + list + " using listIterator\n");
+        writer.scope(() -> {
+            int currIndex = 0;
+            final ListIterator<TestClass> iter = list.listIterator();
+
+            final ArrayList<WeakReference<TestClassBase>> weakReferences = new ArrayList<>();
+            for (final Integer index : indices) {
+                if (currIndex <= index) {
+                    while (currIndex <= index) {
+                        currIndex++;
+                        iter.next();
+                    }
+                    currIndex--;
+                } else {
+                    while (currIndex > index) {
+                        currIndex--;
+                        iter.previous();
+                    }
+                }
+                if (list.get(index) != null) {
+                    weakReferences.add(list.get(index).selfReference);
+                }
+                iter.remove();
+                initial.remove(index.intValue());
+            }
+            gc();
+            for (final WeakReference<TestClassBase> ref : weakReferences) {
+                final TestClassBase testClass = ref.get();
+                Asserts.assertNull(testClass, "TestClass " + testClass + " is expected not to exist. If you're ABSOLUTELY SURE it's wrong, comment that line");
+            }
+            checkElements(list, initial);
         });
     }
 
@@ -121,7 +180,7 @@ public class ComplexPreListTest extends SimplePreListTest {
     public static void main(String[] args) throws IOException {
         writer.write("Testing ArrayPreList\n");
         writer.scope(() -> {
-            ComplexPreList preList = new ArrayPreList();
+            final ComplexPreList preList = new ArrayPreList();
             checkNonModifying(preList, List.of(), Arrays.asList(123, new Object(), "abc", new TestClass("test"), new TestClassBase("base"), null));
 
             ArrayList<TestClass> current =
@@ -157,9 +216,27 @@ public class ComplexPreListTest extends SimplePreListTest {
                     )
             );
             checkNonModifying(preList, current, List.of());
+            checkNonModifying(preList, current, List.of());
             checkRemove(preList, current, Arrays.asList(new TestClass("a"), new TestClass("xx"), new TestClass("a"), null, new TestClass("b"), new TestClass("b")));
             checkRemoveIndexed(preList, current, List.of(0, 1, 0));
 
+            current = new ArrayList<>();
+            doListIteratorAdd(
+                    preList, current,
+                    List.of(
+                            Pair.of(0, new TestClass("a")),
+                            Pair.of(1, new TestClass("b")),
+                            Pair.of(2, null),
+                            Pair.of(3, new TestClass("c")),
+                            Pair.of(0, new TestClass("d")),
+                            Pair.of(4, null),
+                            Pair.of(5, new TestClass("e"))
+                    )
+            );
+            checkNonModifying(preList, current, List.of());
+            checkListIteratorRemove(preList, current, List.of(4, 5, 1, 2, 0, 1, 0));
+
+            preList.clear();
             current = new ArrayList<>();
             doAddToEnd(
                     preList, current,
@@ -303,5 +380,5 @@ public class ComplexPreListTest extends SimplePreListTest {
     }
 }
 
-// TODO: listIterator add, remove
+// TODO: listIterator INVALID add, remove
 // TODO: Views (subList).
