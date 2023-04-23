@@ -24,6 +24,32 @@ public class ComplexPreListTest extends SimplePreListTest {
         }
     }
 
+    protected static void doListIteratorSet(final ComplexPreList list, final List<TestClass> initial,
+                                            final Collection<Pair<Integer, TestClass>> modifications) throws IOException {
+        writer.write("Testing listIterator's set\n");
+        writer.scope(() -> {
+            final ListIterator<TestClass> iter = list.listIterator();
+            int index = 0;
+            for (final Pair<Integer, TestClass> mod : modifications) {
+                if (index <= mod.first()) {
+                    while (index <= mod.first()) {
+                        index++;
+                        iter.next();
+                    }
+                } else {
+                    while (index > mod.first()) {
+                        index--;
+                        iter.previous();
+                    }
+                }
+                iter.set(mod.second());
+
+                initial.set(mod.first(), mod.second());
+                writer.write("set(" + mod.first() + ", " + mod.second() + ")\n");
+            }
+        });
+    }
+
     private static <E> void testListIterator(final ListIterator<? super E> it, final int start, final List<? super E> expected) throws IOException {
         writer.write("    Forward pass\n");
         if (start == 0) {
@@ -83,19 +109,6 @@ public class ComplexPreListTest extends SimplePreListTest {
         }
     }
 
-    /*protected static void checkSubListEquality(final ComplexPreList list, final List<TestClass> expected) {
-        writer.write("Checking subList-s of " + list);
-        for (int fromIndex = 0; fromIndex < list.size(); fromIndex++) {
-            for (int toIndex = fromIndex; toIndex < list.size(); toIndex++) {
-                final ComplexPreList subList = list.subList(fromIndex, toIndex);
-                final List<TestClass> expectedSubList = expected.subList(fromIndex, toIndex);
-                writer.write("   Checking " + list + ".subList(" + fromIndex + ", " + toIndex + ") -> " + subList);
-                writer.write("   Expected " + expectedSubList + ".subList(" + fromIndex + ", " + toIndex + ") -> " + expectedSubList);
-                checkNonModifying(subList, expectedSubList, List.of());
-            }
-        }
-    }*/
-
     protected static void checkNonModifying(final ComplexPreList list, final List<? super TestClass> initial, final Collection<? super TestClass> notExisting) throws IOException {
         writer.write("Testing non-modifying operations of " + list + "\n");
         writer.scope(() -> {
@@ -118,6 +131,8 @@ public class ComplexPreListTest extends SimplePreListTest {
             doSet(preList, current, List.of(Pair.of(1, null), Pair.of(4, new TestClass("c?")), Pair.of(1, new TestClass("a?"))));
             doSet(preList, current, List.of(Pair.of(0, new TestClass("-a")), Pair.of(3, new TestClass("bc")), Pair.of(5, new TestClass("cd"))));
             checkNonModifying(preList, current, Collections.singletonList(null));
+            doListIteratorSet(preList, current, List.of(Pair.of(0, new TestClass("?00?")), Pair.of(2, new TestClass("?22?")), Pair.of(2, new TestClass("22")), Pair.of(4, new TestClass("44")), Pair.of(1, new TestClass("11")), Pair.of(0, new TestClass("00"))));
+            checkNonModifying(preList, current, List.of());
             doAddIndexed(
                     preList, current,
                     List.of(Pair.of(0, new TestClass("-a")), Pair.of(0, null), Pair.of(0, new TestClass("-b")), Pair.of(7, null), Pair.of(current.size() + 3, null), Pair.of(current.size() + 4, new TestClass("d")))
@@ -224,6 +239,9 @@ public class ComplexPreListTest extends SimplePreListTest {
             doSet(preList, Arrays.asList(base), List.of(Pair.of(5, new TestClass("5")), Pair.of(0, new TestClass("0")), Pair.of(4, new TestClass("4")), Pair.of(3, new TestClass("3"))));
             checkNonModifying(preList, Arrays.asList(base), Collections.singletonList(null));
 
+            doListIteratorSet(preList, Arrays.asList(base), List.of(Pair.of(0, new TestClass("?00?")), Pair.of(2, new TestClass("?22?")), Pair.of(2, new TestClass("22")), Pair.of(5, new TestClass("55")), Pair.of(1, new TestClass("11")), Pair.of(0, new TestClass("00"))));
+            checkNonModifying(preList, Arrays.asList(base), List.of());
+
             writer.write("Testing IndexOutOfBoundsException\n");
             Asserts.assertThrow(() -> preList.get(6), IndexOutOfBoundsException.class, preList + ".get(6) is expected to throw IndexOutOfBoundsException");
             Asserts.assertThrow(() -> preList.get(-1), IndexOutOfBoundsException.class, preList + ".get(-1) is expected to throw IndexOutOfBoundsException");
@@ -285,5 +303,5 @@ public class ComplexPreListTest extends SimplePreListTest {
     }
 }
 
-// TODO: listIterator add, remove, set
+// TODO: listIterator add, remove
 // TODO: Views (subList).
