@@ -176,7 +176,7 @@ public class SimplePreListTest {
         });
     }
 
-    protected static void doIteratorRemove(final SimplePreList list, final List<TestClass> current, final Set<Integer> toRemove) throws IOException {
+    protected static void doIteratorRemove(final SimplePreList list, final List<TestClass> current, final SortedSet<Integer> toRemove) throws IOException {
         writer.write("Removing elements with the following indices: " + toRemove + " using iterator.remove\n");
         int i = 0;
         final ArrayList<WeakReference<TestClassBase>> weakReferences = new ArrayList<>();
@@ -268,7 +268,7 @@ public class SimplePreListTest {
                     )
             );
             checkElements(preList, current);
-            doIteratorRemove(preList, current, Set.of(1, 2, 4, 5, 6, 7));
+            doIteratorRemove(preList, current, new TreeSet<>(List.of(1, 2, 4, 5, 6, 7)));
             checkNonModifying(preList, current, List.of(new TestClass("c"), new TestClass("b")));
 
             preList.clear();

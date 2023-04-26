@@ -252,7 +252,7 @@ public class ComplexPreListTest extends SimplePreListTest {
                     )
             );
             checkElements(preList, current);
-            doIteratorRemove(preList, current, Set.of(1, 2, 4, 5, 6, 7));
+            doIteratorRemove(preList, current, new TreeSet<>(List.of(1, 2, 4, 5, 6, 7)));
             checkNonModifying(preList, current, List.of(new TestClass("c"), new TestClass("b")));
 
             preList.clear();
@@ -300,9 +300,11 @@ public class ComplexPreListTest extends SimplePreListTest {
 
             Asserts.assertThrow(() -> preList.listIterator().previous(), NoSuchElementException.class, preList + "'s pre-to-begin listIterator's previous is expected to throw NoSuchElementException");
             final ListIterator<TestClass> listIterator = preList.listIterator(1);
+            Asserts.assertThrow(() -> listIterator.set(null), IllegalStateException.class, preList + " listIterator's set before next() is expected to throw IllegalStateException");
             Asserts.assertThrow(listIterator::remove, IllegalStateException.class, preList + ".listIterator(...).remove() remove is expected to throw IllegalStateException");
             listIterator.next();
             listIterator.remove();
+            Asserts.assertThrow(() -> listIterator.set(null), IllegalStateException.class, preList + " listIterator's set after remove() is expected to throw IllegalStateException");
             Asserts.assertThrow(listIterator::remove, IllegalStateException.class, preList + "listIterator twice removal is expected to throw IllegalStateException");
             Asserts.assertThrow(listIterator::next, NoSuchElementException.class, preList + "'s past-to-end listIterator's next is expected to throw NoSuchElementException");
         });
@@ -351,17 +353,17 @@ public class ComplexPreListTest extends SimplePreListTest {
             Asserts.assertThrow(
                     iterator::remove,
                     List.of(UnsupportedOperationException.class, IllegalStateException.class),
-                    preList + " iterators' remove is expected to throw UnsupportedOperationException or IllegalStateException"
+                    preList + " iterator's remove before next() is expected to throw UnsupportedOperationException or IllegalStateException"
             );
             iterator.next();
-            Asserts.assertThrow(iterator::remove, UnsupportedOperationException.class, preList + " iterators' remove is expected to throw UnsupportedOperationException");
+            Asserts.assertThrow(iterator::remove, UnsupportedOperationException.class, preList + " iterator's remove is expected to throw UnsupportedOperationException");
             iterator.next();
             iterator.next();
-            Asserts.assertThrow(iterator::remove, UnsupportedOperationException.class, preList + " iterators' remove is expected to throw UnsupportedOperationException");
+            Asserts.assertThrow(iterator::remove, UnsupportedOperationException.class, preList + " iterator's remove is expected to throw UnsupportedOperationException");
             iterator.next();
             iterator.next();
             iterator.next();
-            Asserts.assertThrow(iterator::next, NoSuchElementException.class, preList + " iterators' remove is expected to throw NoSuchElementException");
+            Asserts.assertThrow(iterator::next, NoSuchElementException.class, preList + " iterator's remove from the end is expected to throw NoSuchElementException");
 
             Asserts.assertThrow(() -> preList.listIterator().previous(), NoSuchElementException.class, preList + "'s pre-to-begin listIterator's previous is expected to throw NoSuchElementException");
             final ListIterator<TestClass> listIterator = preList.listIterator(4);
@@ -370,15 +372,14 @@ public class ComplexPreListTest extends SimplePreListTest {
                     List.of(UnsupportedOperationException.class, IllegalStateException.class),
                     preList + " listIterator' remove is expected to throw UnsupportedOperationException or IllegalStateException"
             );
+            Asserts.assertThrow(() -> listIterator.set(null), IllegalStateException.class, preList + " listIterator's set before next() is expected to throw IllegalStateException");
             listIterator.next();
-            Asserts.assertThrow(listIterator::remove, UnsupportedOperationException.class, preList + " listIterator' remove is expected to throw UnsupportedOperationException");
+            Asserts.assertThrow(listIterator::remove, UnsupportedOperationException.class, preList + " listIterator's remove is expected to throw UnsupportedOperationException");
+            Asserts.assertThrow(() -> listIterator.add(null), UnsupportedOperationException.class, preList + " listIterator's add is expected to throw UnsupportedOperationException");
             listIterator.next();
-            Asserts.assertThrow(listIterator::next, NoSuchElementException.class, preList + " listIterator' remove is expected to throw NoSuchElementException");
+            Asserts.assertThrow(listIterator::next, NoSuchElementException.class, preList + " listIterator's remove rom the end is expected to throw NoSuchElementException");
 
             checkViewingArrayAsPreList();
         });
     }
 }
-
-// TODO: listIterator INVALID add, remove
-// TODO: Views (subList).
