@@ -180,7 +180,7 @@ public class SimplePreListTest {
         writer.write("Removing elements with the following indices: " + toRemove + " using iterator.remove\n");
         int i = 0;
         final ArrayList<WeakReference<TestClassBase>> weakReferences = new ArrayList<>();
-        for (final Iterator<TestClass> actual = list.iterator(), expected = current.iterator(); actual.hasNext();) {
+        for (final Iterator<TestClass> actual = list.iterator(), expected = current.iterator(); expected.hasNext();) {
             final TestClass elem = actual.next();
             expected.next();
             if (toRemove.contains(i++)) {
