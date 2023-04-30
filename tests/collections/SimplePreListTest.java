@@ -202,7 +202,7 @@ public class SimplePreListTest {
         writer.write("Checking ArrayAsPreList being view\n");
         writer.scope(() -> {
             final TestClass[] array = new TestClass[]{new TestClass("a"), new TestClass("b"), new TestClass("c")};
-            final ComplexPreList preList = new ArrayAsPreList(array);
+            final SimplePreList preList = new ArrayAsPreList(array);
             final TestClass e1 = new TestClass("new");
             preList.set(1, e1);
             Asserts.assertIdentical(e1, array[1], "Source array is expected to change after ArrayAsPreList changed.");
