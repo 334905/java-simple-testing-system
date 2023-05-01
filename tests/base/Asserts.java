@@ -1,5 +1,6 @@
 package base;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,10 @@ public class Asserts {
         assertTrue(o1 == o2, message);
     }
 
+    public static void assertNotIdentical(final Object o1, final Object o2, final String message) {
+        assertTrue(o1 != o2, message);
+    }
+
     public static void assertNull(final Object obj, final String message) {
         assertIdentical(obj, null, message);
     }
@@ -40,6 +45,10 @@ public class Asserts {
             }
         }
         throw new AssertionError(message);
+    }
+
+    public static void assertEmpty(final Collection<?> collection, final String message) {
+        assertTrue(collection.isEmpty(), message);
     }
 
     public static void assertThrow(final Runnable runnable, final List<Class<? extends Exception>> exceptionTypes, final String message) {

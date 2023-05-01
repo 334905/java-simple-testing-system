@@ -6,12 +6,13 @@ import java.util.Iterator;
  * Простой пред-список. Содержит некое подмножество методов {@link java.util.List}, чтобы было проще реализовывать.
  * Хранит объекты типа {@link TestClass} для простоты тестирования.
  */
-public interface SimplePreList extends Iterable<TestClass> {
+public interface SimplePreList extends PreCollection {
     /**
      * Добавляет в конец списка указанный элемент.
      * @param element Элемент, который надо добавить.
      * @return {@code true}.
      */
+    @Override
     boolean add(TestClass element);
 
     /**
@@ -21,18 +22,6 @@ public interface SimplePreList extends Iterable<TestClass> {
      * @throws IndexOutOfBoundsException если индекс меньше нуля или больше {@link #size()}.
      */
     void add(int index, TestClass element);
-
-    /**
-     * Удаляет все элементы из списка.
-     */
-    void clear();
-
-    /**
-     * Проверяет, есть ли объект, {@link java.util.Objects#equals(Object, Object) равный} данному в списке.
-     * @param element Элемент, который нужно искать в списке.
-     * @return {@code true}, если элемент найден, {@code false} иначе.
-     */
-    boolean contains(Object element);
 
     /**
      * Возвращает элемент списка, находящийся по заданному индексу.
@@ -53,13 +42,8 @@ public interface SimplePreList extends Iterable<TestClass> {
      * Возвращает итератор, итерирующийся по всем элементам данного списка по порядку.
      * @return Итератор, итерирующийся по всем элементам данного списка.
      */
+    @Override
     Iterator<TestClass> iterator();
-
-    /**
-     * Проверка отсутствия элементов в списке.
-     * @return {@code true}, если в списке ноль элементов, иначе {@code false}.
-     */
-    boolean isEmpty();
 
     /**
      * Удаляет из списка <b>первый</b> элемент, {@link java.util.Objects#equals(Object, Object) равный} данному.
@@ -85,11 +69,4 @@ public interface SimplePreList extends Iterable<TestClass> {
      * @throws IndexOutOfBoundsException Если индекс меньше нуля или больше либо равен {@link #size()}.
      */
     TestClass set(int index, TestClass element);
-
-    /**
-     * Возвращает количество элементов в списке.
-     * Если оно больше, чем {@link Integer#MAX_VALUE}, возвращается {@link Integer#MAX_VALUE}.
-     * @return количество элементов в списке.
-     */
-    int size();
 }

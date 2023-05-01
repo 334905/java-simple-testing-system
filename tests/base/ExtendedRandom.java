@@ -1,5 +1,6 @@
 package base;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -49,5 +50,18 @@ public class ExtendedRandom extends Random {
 
     public Stream<String> stringsFrom(final int minSize, final int maxSize, final String source, final long size) {
         return stringsFrom(minSize, maxSize, source).limit(size);
+    }
+
+    public BigInteger nextBigInteger(final BigInteger bound) {
+        BigInteger result = new BigInteger(bound.bitLength(), this);
+        while (result.compareTo(bound) >= 0) {
+            result = new BigInteger(bound.bitLength(), this);
+        }
+        return result;
+    }
+
+    public BigInteger nextBigInteger(final BigInteger origin, final BigInteger bound) {
+        final BigInteger delta = bound.subtract(origin);
+        return nextBigInteger(delta).add(origin);
     }
 }
