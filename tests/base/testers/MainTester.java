@@ -1,9 +1,8 @@
 package base.testers;
 
-import base.expected.Expected;
+import base.either.expected.Expected;
 import base.pairs.Pair;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 

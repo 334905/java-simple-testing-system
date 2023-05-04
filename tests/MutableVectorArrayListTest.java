@@ -1,6 +1,6 @@
 import base.ExtendedRandom;
 import base.IndentingWriter;
-import base.expected.Expected;
+import base.either.expected.Expected;
 import base.function.ThrowingConsumer;
 import mutable_vector_array_list.MutableVector;
 import mutable_vector_array_list.MutableVectorArrayListTester;

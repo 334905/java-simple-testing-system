@@ -1,16 +1,13 @@
 import base.IndentingWriter;
-import base.expected.Expected;
+import base.either.expected.Expected;
 import base.testers.ClassTester;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 public class UtilsTest {

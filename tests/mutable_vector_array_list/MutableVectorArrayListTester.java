@@ -1,6 +1,6 @@
 package mutable_vector_array_list;
 
-import base.expected.Expected;
+import base.either.expected.Expected;
 import base.testers.ClassTester;
 
 import java.lang.reflect.Constructor;

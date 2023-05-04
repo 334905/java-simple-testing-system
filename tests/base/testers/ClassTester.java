@@ -1,7 +1,7 @@
 package base.testers;
 
 import base.StringInputStream;
-import base.expected.Expected;
+import base.either.expected.Expected;
 import base.pairs.Pair;
 
 import java.io.*;
