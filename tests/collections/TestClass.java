@@ -64,8 +64,7 @@ public class TestClass extends TestClassBase {
     }
 
     private static final ToIntFunction<TestClass> inheritanceToInt = testClass -> testClass instanceof TestClassDerived ? 100 : 0;
-    static final Comparator<TestClass> CASE_SENSITIVE_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(TestClass::getValue).thenComparingInt(inheritanceToInt));
-    static final Comparator<TestClass> CASE_INSENSITIVE_COMPARATOR = Comparator.nullsLast(Comparator.comparing(TestClass::getValue, String.CASE_INSENSITIVE_ORDER));
+    static final Comparator<TestClass> SENSITIVE_COMPARATOR = Comparator.nullsFirst(Comparator.comparing(TestClass::getValue).thenComparingInt(inheritanceToInt));
     static final Comparator<TestClass> LENGTH_COMPARATOR = Comparator.comparingInt(o -> o.getValue().length());
 }
 

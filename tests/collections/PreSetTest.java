@@ -30,11 +30,11 @@ public class PreSetTest {
         );
 
         {
-            final SortedSet<TestClass> actual1 = new TreeSet<>(TestClass.CASE_SENSITIVE_COMPARATOR);
+            final SortedSet<TestClass> actual1 = new TreeSet<>(TestClass.SENSITIVE_COMPARATOR);
             for (final TestClass testClass : actual) {
                 actual1.add(testClass);
             }
-            final SortedSet<TestClass> expected1 = new TreeSet<>(TestClass.CASE_SENSITIVE_COMPARATOR);
+            final SortedSet<TestClass> expected1 = new TreeSet<>(TestClass.SENSITIVE_COMPARATOR);
             expected1.addAll(expected);
 
             System.out.println("Testing equality of " + actual1 + " and " + expected1 + " (they are sorted versions of " + actual + " and " + expected + " respectively)");
@@ -205,17 +205,5 @@ public class PreSetTest {
                 .filter(Objects::nonNull)
                 .toList();
         Asserts.assertEmpty(existing, "Expected removed elements not to exist, but the following exists: " + existing);
-    }
-
-    public void main(final Pair<PreSet, Set<TestClass>> testingPair) {
-        checkAdd(testingPair, Arrays.asList(new TestClass("a"), null, new TestClassDerived("b"), null, new TestClassDerived("a"), new TestClass("b")));
-        checkContains(testingPair, Arrays.asList(new TestClass("a"), null, new Object(), "a", new TestClassDerived("b"), new TestClassDerived("a"), new TestClass("b"), new TestClass("c"), new TestClassDerived("c")));
-        checkClear(testingPair);
-        checkRemove(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new Object(), "b"));
-        checkAdd(testingPair, Arrays.asList(new TestClassDerived("a"), new TestClassDerived("b"), new TestClass("c"), new TestClass("d")));
-        checkContains(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new TestClass("a"), new TestClass("b"), new Object(), "a"));
-        checkIteratorRemove(testingPair, new HashSet<>(Arrays.asList(null, new TestClassBase("c"), new TestClass("b"), new Object(), "a", "b")));
-        checkAdd(testingPair, Arrays.asList(new TestClassDerived("?"), new TestClass("#"), new TestClassDerived("!")));
-        checkRemove(testingPair, Arrays.asList(null, new TestClassBase("c"), new TestClass("?"), new TestClassBase("!"), new TestClassBase("a"), new Object()));
     }
 }
