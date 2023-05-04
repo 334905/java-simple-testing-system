@@ -7,10 +7,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 
 public class PreSetTest {
-    public static void main(String[] args) {
-        new PreSetTest().main();
-    }
-
     protected static String actualExpectedToString(final Object actual, final Object expected) {
         return "{actual=" + actual + "; expected=" + expected + "}";
     }
@@ -211,17 +207,16 @@ public class PreSetTest {
         Asserts.assertEmpty(existing, "Expected removed elements not to exist, but the following exists: " + existing);
     }
 
-    public void main() {
-        final Pair<PreSet, Set<TestClass>> testingPair = Pair.of(new HashPreSet(), new HashSet<>());
-        checkContainsSame(testingPair);
-        checkAdd(testingPair, Arrays.asList(new TestClass("a"), null, new TestClassDerived("b"), null, new TestClassDerived("a"), new TestClass("b")));
-        checkContains(testingPair, Arrays.asList(new TestClass("a"), null, new Object(), "a", new TestClassDerived("b"), new TestClassDerived("a"), new TestClass("b"), new TestClass("c"), new TestClassDerived("c")));
-        checkClear(testingPair);
-        checkRemove(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new Object(), "b"));
-        checkAdd(testingPair, Arrays.asList(new TestClassDerived("a"), new TestClassDerived("b"), new TestClass("c"), new TestClass("d")));
-        checkContains(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new TestClass("a"), new TestClass("b"), new Object(), "a"));
-        checkIteratorRemove(testingPair, new HashSet<>(Arrays.asList(null, new TestClassBase("c"), new TestClass("b"), new Object(), "a", "b")));
-        checkAdd(testingPair, Arrays.asList(new TestClassDerived("?"), new TestClass("#"), new TestClassDerived("!")));
-        checkRemove(testingPair, Arrays.asList(null, new TestClassBase("c"), new TestClass("?"), new TestClassBase("!"), new TestClassBase("a"), new Object()));
+    public static void main(final Pair<PreSet, Set<TestClass>> testingPair) {
+        final PreSetTest test = new PreSetTest();
+        test.checkAdd(testingPair, Arrays.asList(new TestClass("a"), null, new TestClassDerived("b"), null, new TestClassDerived("a"), new TestClass("b")));
+        test.checkContains(testingPair, Arrays.asList(new TestClass("a"), null, new Object(), "a", new TestClassDerived("b"), new TestClassDerived("a"), new TestClass("b"), new TestClass("c"), new TestClassDerived("c")));
+        test.checkClear(testingPair);
+        test.checkRemove(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new Object(), "b"));
+        test.checkAdd(testingPair, Arrays.asList(new TestClassDerived("a"), new TestClassDerived("b"), new TestClass("c"), new TestClass("d")));
+        test.checkContains(testingPair, Arrays.asList(null, new TestClassBase("a"), new TestClassBase("b"), new TestClass("a"), new TestClass("b"), new Object(), "a"));
+        test.checkIteratorRemove(testingPair, new HashSet<>(Arrays.asList(null, new TestClassBase("c"), new TestClass("b"), new Object(), "a", "b")));
+        test.checkAdd(testingPair, Arrays.asList(new TestClassDerived("?"), new TestClass("#"), new TestClassDerived("!")));
+        test.checkRemove(testingPair, Arrays.asList(null, new TestClassBase("c"), new TestClass("?"), new TestClassBase("!"), new TestClassBase("a"), new Object()));
     }
 }
