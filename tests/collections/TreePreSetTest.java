@@ -3,8 +3,6 @@ package collections;
 import base.Asserts;
 import base.pairs.IterableUtils;
 import base.pairs.Pair;
-import base.pairs.PairIterator;
-import com.sun.source.tree.Tree;
 
 import java.util.*;
 
