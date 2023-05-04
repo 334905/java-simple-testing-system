@@ -22,7 +22,7 @@ public sealed abstract class Either<A, B> {
 
         @Override
         public int index() {
-            return 1;
+            return 0;
         }
 
         @Override
@@ -45,7 +45,7 @@ public sealed abstract class Either<A, B> {
 
         @Override
         public int index() {
-            return 0;
+            return 1;
         }
 
         @Override
