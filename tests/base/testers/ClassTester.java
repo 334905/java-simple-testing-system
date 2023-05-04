@@ -66,6 +66,7 @@ public abstract class ClassTester {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected final <T> Expected<T, Exception> runMethod(final Object instance, final Method method, final Object... args)
             throws IllegalAccessException {
         try {
