@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class HashPreSetTest extends PreSetTest {
     public static void main(final String[] args) {
-        final PreSetTest test = new PreSetTest();
+        final HashPreSetTest test = new HashPreSetTest();
         final Pair<? extends PreSet, ? extends Set<TestClass>> testingPair = Pair.of(new HashPreSet(), new HashSet<>());
         test.checkAdd(testingPair, Arrays.asList(new TestClass("a"), null, new TestClassDerived("b"), null, new TestClassDerived("a"), new TestClass("b")));
         test.checkAdd(testingPair, Arrays.asList(new TestClass("aaa"), new TestClassDerived("bb"), new TestClass("cc")));
