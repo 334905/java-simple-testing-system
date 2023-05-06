@@ -150,7 +150,7 @@ public class ComplexPreListTest extends SimplePreListTest {
 
             for (int i = 0; i < list.size(); i++) {
                 final int ii = i;
-                writer.write("Testing listIterator(" + i + ")");
+                writer.write("Testing listIterator(" + i + ")\n");
                 writer.scope(() -> testListIterator(list.listIterator(ii), ii, expected));
             }
         });
